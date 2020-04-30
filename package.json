@@ -1,0 +1,24 @@
+{
+  "name": "bf4-stats-next-unlocks-web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build"
+  },
+  "keywords": [],
+  "author": "",
+  "bugs": "https://github.com/cxcorp/bf4-stats-next-unlocks-web/issues",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.19.2",
+    "bootstrap": "^4.4.1",
+    "date-fns": "^2.12.0",
+    "next": "^9.3.6",
+    "react": "^16.13.1",
+    "react-bootstrap": "^1.0.1",
+    "react-dom": "^16.13.1"
+  }
+}
