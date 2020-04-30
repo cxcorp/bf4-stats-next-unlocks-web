@@ -1,15 +1,29 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import Head from "next/head";
 import Router from "next/router";
 import { Container, Row, Col, Badge } from "react-bootstrap";
+
+import { LOCALSTORAGE_PERSONA_ID_KEY } from "../common";
 import IdForm from "../components/IdForm";
 
 const Index = () => {
   const [loading, setLoading] = useState(false);
+  const [persistedPersonaId, setPersistedPersonaId] = useState(undefined);
 
   const handleFormSubmit = useCallback((id) => {
     setLoading(true);
     Router.push("/unlocks/[personaId]", `/unlocks/${id}`);
+  }, []);
+
+  useEffect(() => {
+    try {
+      const persistedId = localStorage.getItem(LOCALSTORAGE_PERSONA_ID_KEY);
+      if (persistedId) {
+        setPersistedPersonaId(persistedId);
+      }
+    } catch (e) {
+      console.error("Failed to read persisted persona ID from localStorage", e);
+    }
   }, []);
 
   return (
@@ -23,6 +37,7 @@ const Index = () => {
             <h1>BF4 Next Attachment Unlocks</h1>
             <IdForm
               className="mt-5"
+              defaultId={persistedPersonaId}
               loading={loading}
               onSubmit={handleFormSubmit}
             />

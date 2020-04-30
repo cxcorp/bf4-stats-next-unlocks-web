@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, createRef } from "react";
 import axios from "axios";
 import Head from "next/head";
 import Router, { useRouter } from "next/router";
 import { Container, Row, Col, Table, Button } from "react-bootstrap";
 import formatDistance from "date-fns/formatDistance";
 
+import { LOCALSTORAGE_PERSONA_ID_KEY } from "../../common";
 import { getNextUnlocks } from "../../data";
 import IdForm from "../../components/IdForm";
 import LoadingButton from "../../components/LoadingButton";
@@ -82,6 +83,17 @@ const Unlocks = ({ nextUnlocks, dataDate, error }) => {
     },
     [personaId]
   );
+
+  useEffect(() => {
+    if (error) {
+      return;
+    }
+    try {
+      localStorage.setItem(LOCALSTORAGE_PERSONA_ID_KEY, personaId);
+    } catch (e) {
+      console.error("Failed to persist persona ID to localStorage", e);
+    }
+  }, [personaId, error]);
 
   if (error) {
     return (
