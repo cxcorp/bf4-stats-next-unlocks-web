@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, createRef } from "react";
 import axios from "axios";
 import Head from "next/head";
 import Router, { useRouter } from "next/router";
+import Link from "next/link";
 import { Container, Row, Col, Table, Button } from "react-bootstrap";
 import formatDistance from "date-fns/formatDistance";
 
@@ -18,7 +19,9 @@ const Layout = ({ id, loading = false, onIdFormSubmit, children }) => {
       <Container>
         <Row className="pt-3 pt-sm-5 justify-content-md-center">
           <Col lg={8}>
-            <h1>BF4 Next Attachment Unlocks</h1>
+            <Link href="/">
+              <a><h1>BF4 Next Attachment Unlocks</h1></a>
+            </Link>
             <IdForm
               className="mt-5"
               loading={loading}
