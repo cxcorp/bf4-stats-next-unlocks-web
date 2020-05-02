@@ -29,6 +29,7 @@ export const getNextUnlocks = (weaponStats) => {
       return {
         weapon: weaponsByGuid[guid],
         unlockId: WeaponAccessory.unlockId(accessory),
+        attachmentName: WeaponAccessory.attachmentName(accessory),
         unlockProgress: unlockProgress,
         killsNeeded: unlockProgress.valueNeeded - unlockProgress.actualValue,
       };

@@ -89,6 +89,7 @@ const UnlocksTable = ({ unlocks }) => {
         <thead>
           <tr>
             <th>Kills needed</th>
+            <th>Unlock</th>
             <th>Weapon</th>
             <th>Weapon type</th>
             <th></th>
@@ -98,7 +99,13 @@ const UnlocksTable = ({ unlocks }) => {
           {unlocks
             .filter((u) => u.unlockProgress.actualValue >= minCurrentKills)
             .map(
-              ({ weapon, unlockId, unlockProgress: progress, killsNeeded }) => {
+              ({
+                weapon,
+                attachmentName,
+                unlockId,
+                unlockProgress: progress,
+                killsNeeded,
+              }) => {
                 const markedDone = doneGuids[weapon.guid];
                 return (
                   <tr
@@ -109,11 +116,13 @@ const UnlocksTable = ({ unlocks }) => {
                       <b>{killsNeeded}</b> ({progress.actualValue}/
                       {progress.valueNeeded})
                     </td>
+                    <td>{attachmentName}</td>
                     <td>{weapon.slug.toUpperCase()}</td>
                     <td>{weapon.category}</td>
                     <td>
                       <Button
                         data-guid={weapon.guid}
+                        size="sm"
                         variant="outline-secondary"
                         onClick={handleDoneClicked}
                       >
