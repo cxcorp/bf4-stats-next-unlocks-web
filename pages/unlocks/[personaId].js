@@ -18,7 +18,7 @@ const Layout = ({ id, loading = false, onIdFormSubmit, children }) => {
 
       <Container>
         <Row className="pt-3 pt-sm-5 justify-content-md-center">
-          <Col lg={8}>
+          <Col lg={9}>
             <Link href="/">
               <a>
                 <h1>BF4 Next Attachment Unlocks</h1>
@@ -34,7 +34,7 @@ const Layout = ({ id, loading = false, onIdFormSubmit, children }) => {
           </Col>
         </Row>
         <Row className="pt-3 pt-sm-5 justify-content-md-center">
-          <Col lg={8}>{children}</Col>
+          <Col lg={9}>{children}</Col>
         </Row>
       </Container>
     </>
