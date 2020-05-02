@@ -3,7 +3,7 @@ import axios from "axios";
 import Head from "next/head";
 import Router, { useRouter } from "next/router";
 import Link from "next/link";
-import { Container, Row, Col, Table, Button } from "react-bootstrap";
+import { Container, Row, Col, Table, Button, Form } from "react-bootstrap";
 import formatDistance from "date-fns/formatDistance";
 
 import { LOCALSTORAGE_PERSONA_ID_KEY } from "../../common";
@@ -20,7 +20,9 @@ const Layout = ({ id, loading = false, onIdFormSubmit, children }) => {
         <Row className="pt-3 pt-sm-5 justify-content-md-center">
           <Col lg={8}>
             <Link href="/">
-              <a><h1>BF4 Next Attachment Unlocks</h1></a>
+              <a>
+                <h1>BF4 Next Attachment Unlocks</h1>
+              </a>
             </Link>
             <IdForm
               className="mt-5"
@@ -35,6 +37,66 @@ const Layout = ({ id, loading = false, onIdFormSubmit, children }) => {
           <Col lg={8}>{children}</Col>
         </Row>
       </Container>
+    </>
+  );
+};
+
+const maxBy = (arr, fn) => {
+  return arr.reduce((a, b) => (fn(a) > fn(b) ? a : b), arr[0]);
+};
+
+const UnlocksTable = ({ unlocks }) => {
+  const [minKills, setMinKills] = useState(0);
+
+  const handleMinKillsChange = useCallback((e) => {
+    e.preventDefault();
+    setMinKills(e.target.value);
+  }, []);
+
+  const maxKillsRequired = maxBy(unlocks, (unlock) => unlock.killsNeeded);
+
+  return (
+    <>
+      <Form>
+        <Form.Group controlId="formBasicRange">
+          <Form.Label>
+            Only show unlocks requiring at least {minKills} kills
+          </Form.Label>
+          <Form.Control
+            type="range"
+            value={minKills}
+            min={0}
+            max={maxKillsRequired}
+            onChange={handleMinKillsChange}
+          />
+        </Form.Group>
+      </Form>
+
+      <Table striped bordered>
+        <thead>
+          <tr>
+            <th>Kills needed</th>
+            <th>Weapon</th>
+            <th>Weapon type</th>
+          </tr>
+        </thead>
+        <tbody>
+          {unlocks
+            .filter((u) => u.killsNeeded >= minKills)
+            .map(
+              ({ weapon, unlockId, unlockProgress: progress, killsNeeded }) => (
+                <tr key={unlockId + weapon.guid}>
+                  <td>
+                    <b>{killsNeeded}</b> ({progress.actualValue}/
+                    {progress.valueNeeded})
+                  </td>
+                  <td>{weapon.slug.toUpperCase()}</td>
+                  <td>{weapon.category}</td>
+                </tr>
+              )
+            )}
+        </tbody>
+      </Table>
     </>
   );
 };
@@ -135,29 +197,7 @@ const Unlocks = ({ nextUnlocks, dataDate, error }) => {
           </p>
         </Col>
       </Row>
-      <Table striped bordered>
-        <thead>
-          <tr>
-            <th>Kills needed</th>
-            <th>Weapon</th>
-            <th>Weapon type</th>
-          </tr>
-        </thead>
-        <tbody>
-          {nextUnlocks.map(
-            ({ weapon, unlockId, unlockProgress: progress, killsNeeded }) => (
-              <tr key={unlockId + weapon.guid}>
-                <td>
-                  <b>{killsNeeded}</b> ({progress.actualValue}/
-                  {progress.valueNeeded})
-                </td>
-                <td>{weapon.slug.toUpperCase()}</td>
-                <td>{weapon.category}</td>
-              </tr>
-            )
-          )}
-        </tbody>
-      </Table>
+      <UnlocksTable unlocks={nextUnlocks} />
     </Layout>
   );
 };
