@@ -46,7 +46,7 @@ const maxBy = (arr, fn) => {
 };
 
 const UnlocksTable = ({ unlocks }) => {
-  const [minKills, setMinKills] = useState(0);
+  const [minCurrentKills, setMinKills] = useState(0);
   const [doneGuids, setDoneGuids] = useState({});
 
   const handleMinKillsChange = useCallback((e) => {
@@ -59,20 +59,27 @@ const UnlocksTable = ({ unlocks }) => {
     setDoneGuids((guids) => ({ ...guids, [guid]: !guids[guid] }));
   });
 
-  const maxKillsRequired = maxBy(unlocks, (unlock) => unlock.killsNeeded);
+  const largestCurrentKills = maxBy(
+    unlocks,
+    (unlock) => unlock.unlockProgress.actualValue
+  );
 
   return (
     <>
       <Form>
         <Form.Group controlId="formBasicRange">
           <Form.Label>
-            Only show unlocks requiring at least {minKills} kills
+            Only show unlocks with current kills > <b>{minCurrentKills}</b>
           </Form.Label>
           <Form.Control
             type="range"
-            value={minKills}
+            value={minCurrentKills}
             min={0}
-            max={maxKillsRequired}
+            max={
+              largestCurrentKills
+                ? largestCurrentKills.unlockProgress.actualValue
+                : 500
+            }
             onChange={handleMinKillsChange}
           />
         </Form.Group>
@@ -89,7 +96,7 @@ const UnlocksTable = ({ unlocks }) => {
         </thead>
         <tbody>
           {unlocks
-            .filter((u) => u.killsNeeded >= minKills)
+            .filter((u) => u.unlockProgress.actualValue >= minCurrentKills)
             .map(
               ({ weapon, unlockId, unlockProgress: progress, killsNeeded }) => {
                 const markedDone = doneGuids[weapon.guid];
