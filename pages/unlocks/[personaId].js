@@ -47,11 +47,17 @@ const maxBy = (arr, fn) => {
 
 const UnlocksTable = ({ unlocks }) => {
   const [minKills, setMinKills] = useState(0);
+  const [doneGuids, setDoneGuids] = useState({});
 
   const handleMinKillsChange = useCallback((e) => {
     e.preventDefault();
     setMinKills(e.target.value);
   }, []);
+
+  const handleDoneClicked = useCallback((e) => {
+    const guid = e.target.dataset.guid;
+    setDoneGuids((guids) => ({ ...guids, [guid]: !guids[guid] }));
+  });
 
   const maxKillsRequired = maxBy(unlocks, (unlock) => unlock.killsNeeded);
 
@@ -78,25 +84,46 @@ const UnlocksTable = ({ unlocks }) => {
             <th>Kills needed</th>
             <th>Weapon</th>
             <th>Weapon type</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           {unlocks
             .filter((u) => u.killsNeeded >= minKills)
             .map(
-              ({ weapon, unlockId, unlockProgress: progress, killsNeeded }) => (
-                <tr key={unlockId + weapon.guid}>
-                  <td>
-                    <b>{killsNeeded}</b> ({progress.actualValue}/
-                    {progress.valueNeeded})
-                  </td>
-                  <td>{weapon.slug.toUpperCase()}</td>
-                  <td>{weapon.category}</td>
-                </tr>
-              )
+              ({ weapon, unlockId, unlockProgress: progress, killsNeeded }) => {
+                const markedDone = doneGuids[weapon.guid];
+                return (
+                  <tr
+                    className={markedDone ? "unlock-row--done" : ""}
+                    key={unlockId + weapon.guid}
+                  >
+                    <td>
+                      <b>{killsNeeded}</b> ({progress.actualValue}/
+                      {progress.valueNeeded})
+                    </td>
+                    <td>{weapon.slug.toUpperCase()}</td>
+                    <td>{weapon.category}</td>
+                    <td>
+                      <Button
+                        data-guid={weapon.guid}
+                        variant="outline-secondary"
+                        onClick={handleDoneClicked}
+                      >
+                        {markedDone ? "undo" : "done"}
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              }
             )}
         </tbody>
       </Table>
+      <style jsx>{`
+        .unlock-row--done > td {
+          opacity: 0.3;
+        }
+      `}</style>
     </>
   );
 };
