@@ -1,4 +1,4 @@
-const weaponCategories = {
+const categories = {
   wG: "Grenade",
   waPDW: "PDW",
   wD: "DMR",
@@ -12,7 +12,18 @@ const weaponCategories = {
   wX: "Gadget",
 };
 
-export const categoryName = (id) => weaponCategories[id];
+export const weaponCategories = {
+  waPDW: "PDW",
+  wD: "DMR",
+  wC: "Carbine",
+  wA: "Assault Rifle",
+  wL: "LMG",
+  wH: "Handgun",
+  wSR: "Sniper Rifle",
+  waS: "Shotgun",
+};
+
+export const categoryName = (id) => categories[id];
 export const slug = (category) => category.weaponUnlock.slug;
 export const guid = (category) => category.weaponUnlock.guid;
-export const isWeapon = (id) => id !== "wG" && id !== "wSPk" && id !== "wX";
+export const isWeapon = (id) => id in weaponCategories;
