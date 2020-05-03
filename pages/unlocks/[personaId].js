@@ -10,6 +10,7 @@ import { LOCALSTORAGE_PERSONA_ID_KEY } from "../../common";
 import { getNextUnlocks } from "../../data";
 import IdForm from "../../components/IdForm";
 import LoadingButton from "../../components/LoadingButton";
+import WeaponAccessory from "../../components/WeaponAccessory";
 
 const Layout = ({ id, loading = false, onIdFormSubmit, children }) => {
   return (
@@ -115,6 +116,7 @@ const UnlocksTable = ({ unlocks }) => {
               ({
                 weapon,
                 attachmentName,
+                image,
                 unlockId,
                 unlockProgress: progress,
                 killsNeeded,
@@ -130,6 +132,7 @@ const UnlocksTable = ({ unlocks }) => {
                       {progress.valueNeeded})
                     </td>
                     <td>
+                      {image && <WeaponAccessory imageSlug={image} />}
                       <WordBreaked>{attachmentName}</WordBreaked>
                     </td>
                     <td>{weapon.slug.toUpperCase()}</td>
