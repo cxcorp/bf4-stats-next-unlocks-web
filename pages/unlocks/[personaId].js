@@ -120,6 +120,7 @@ const UnlocksTable = ({ unlocks }) => {
                 unlockId,
                 unlockProgress: progress,
                 killsNeeded,
+                serviceStar,
               }) => {
                 const markedDone = doneGuids[weapon.guid];
                 return (
@@ -132,6 +133,7 @@ const UnlocksTable = ({ unlocks }) => {
                       {progress.valueNeeded})
                     </td>
                     <td>
+                      {serviceStar && `Service star ${serviceStar}`}
                       {image && <WeaponAccessory imageSlug={image} />}
                       <WordBreaked>{attachmentName}</WordBreaked>
                     </td>
