@@ -8,3 +8,4 @@ export const attachmentName = (acc) => {
   const parts = (acc.weaponAddonUnlock.image || "").split("_");
   return parts.slice(0, parts.length - 1).join(" ");
 };
+export const image = (acc) => acc.weaponAddonUnlock.image;
