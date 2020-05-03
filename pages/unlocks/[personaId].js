@@ -152,14 +152,14 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
             variant="outline-secondary"
             onClick={handleCheckAllWeaponCategories}
           >
-            Check all
+            Show all
           </Button>
           <Button
             size="sm"
             variant="outline-secondary"
             onClick={handleUncheckAllWeaponCategories}
           >
-            Uncheck all
+            Hide all
           </Button>
         </Form.Group>
       </Col>
