@@ -41,6 +41,19 @@ const Layout = ({ id, loading = false, onIdFormSubmit, children }) => {
   );
 };
 
+const WordBreaked = ({ children: text }) => {
+  if (!text || typeof text !== "string") {
+    return text;
+  }
+
+  return text.split(/(?=[A-Z])/).map((word, i) => (
+    <React.Fragment key={word + i}>
+      <span>{word}</span>
+      <wbr />
+    </React.Fragment>
+  ));
+};
+
 const maxBy = (arr, fn) => {
   return arr.reduce((a, b) => (fn(a) > fn(b) ? a : b), arr[0]);
 };
@@ -116,7 +129,9 @@ const UnlocksTable = ({ unlocks }) => {
                       <b>{killsNeeded}</b> ({progress.actualValue}/
                       {progress.valueNeeded})
                     </td>
-                    <td>{attachmentName}</td>
+                    <td>
+                      <WordBreaked>{attachmentName}</WordBreaked>
+                    </td>
                     <td>{weapon.slug.toUpperCase()}</td>
                     <td>{weapon.category}</td>
                     <td>
