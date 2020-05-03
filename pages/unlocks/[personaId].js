@@ -18,7 +18,9 @@ import { maxBy, toLookup, setValuesTo } from "../../util";
 const Layout = ({ id, loading = false, onIdFormSubmit, children }) => {
   return (
     <>
-      <Head>User {id} | BF4 Next Attachment Unlocks</Head>
+      <Head>
+        <title>Player {id} | BF4 Next Attachment Unlocks</title>
+      </Head>
 
       <Container>
         <Row className="pt-3 pt-sm-5 justify-content-md-center">
