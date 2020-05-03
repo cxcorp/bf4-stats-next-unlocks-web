@@ -9,3 +9,12 @@ export const attachmentName = (acc) => {
   return parts.slice(0, parts.length - 1).join(" ");
 };
 export const image = (acc) => acc.weaponAddonUnlock.image;
+export const serviceStar = (acc) => {
+  const name = acc.weaponAddonUnlock.unlockId;
+  const rgx = /weapon_.+_(\d)/;
+  if (rgx.test(name)) {
+    return rgx.exec(name)[1];
+  } else {
+    return null;
+  }
+};
