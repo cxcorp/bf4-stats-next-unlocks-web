@@ -5,9 +5,16 @@ import { useOnCtrlClick, usePersistedState } from "../util/hooks";
 import { maxBy, toLookup, setValuesTo } from "../util";
 import { weaponCategories } from "../data/weaponCategories";
 import { WordBreaked } from "../util/components";
+import { Heart, HeartOutline } from "../components/HeartIcon";
 import WeaponAccessory from "./WeaponAccessory";
 
+const FAVORITES_STORAGE_KEY = "UNLOCKS-TABLE-FAVORITES";
+
 const UnlocksTable = ({ unlocks, children: sidebar }) => {
+  const [favorites, setFavorites] = usePersistedState(
+    {},
+    FAVORITES_STORAGE_KEY
+  );
   const [minCurrentKills, setMinKills] = usePersistedState(
     0,
     "UNLOCKS-FILTER-MIN-CURR-KILLS"
@@ -50,10 +57,27 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
     setSelectedCategories((categories) => setValuesTo(categories, false));
   }, []);
 
+  const handleToggleFavorite = useCallback((e) => {
+    const guid = e.currentTarget.dataset.guid;
+    setFavorites((favorites) => ({ ...favorites, [guid]: !favorites[guid] }));
+  }, []);
+
   const largestCurrentKills = maxBy(
     unlocks,
     (unlock) => unlock.unlockProgress.actualValue
   );
+
+  const favoriteRows = unlocks.filter((u) => !!favorites[u.weapon.guid]);
+  const filteredRows = unlocks.filter(
+    (u) =>
+      // don't show favorites twice
+      !favorites[u.weapon.guid] &&
+      // current kills filter
+      u.unlockProgress.actualValue >= minCurrentKills &&
+      // weapon category filter
+      selectedCategories[u.weapon.category]
+  );
+  const renderRows = [...favoriteRows, ...filteredRows];
 
   return (
     <>
@@ -126,57 +150,66 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
             </tr>
           </thead>
           <tbody>
-            {unlocks
-              .filter(
-                (u) =>
-                  u.unlockProgress.actualValue >= minCurrentKills &&
-                  selectedCategories[u.weapon.category]
-              )
-              .map(
-                ({
-                  weapon,
-                  attachmentName,
-                  image,
-                  unlockId,
-                  unlockProgress: progress,
-                  killsNeeded,
-                  serviceStar,
-                }) => {
-                  const markedDone = doneGuids[weapon.guid];
-                  return (
-                    <tr
-                      onClick={handleDebugclick}
-                      className={markedDone ? "unlock-row--done" : ""}
-                      data-weapon-guid={weapon.guid}
-                      data-unlock-id={unlockId}
-                      data-weapon-slug={weapon.slug}
-                      key={unlockId + weapon.guid}
-                    >
-                      <td>
-                        <b>{killsNeeded}</b> ({progress.actualValue}/
-                        {progress.valueNeeded})
-                      </td>
-                      <td>
-                        {serviceStar && `Service star ${serviceStar}`}
-                        {image && <WeaponAccessory imageSlug={image} />}
-                        <WordBreaked text={attachmentName} />
-                      </td>
-                      <td>{weapon.slug.toUpperCase()}</td>
-                      <td>{weapon.category}</td>
-                      <td>
-                        <Button
-                          data-guid={weapon.guid}
-                          size="sm"
-                          variant="outline-secondary"
-                          onClick={handleDoneClicked}
-                        >
-                          {markedDone ? "undo" : "done"}
-                        </Button>
-                      </td>
-                    </tr>
-                  );
-                }
-              )}
+            {renderRows.map(
+              ({
+                weapon,
+                attachmentName,
+                image,
+                unlockId,
+                unlockProgress: progress,
+                killsNeeded,
+                serviceStar,
+              }) => {
+                const FavoriteButton = favorites[weapon.guid]
+                  ? Heart
+                  : HeartOutline;
+                const favoriteButton = (
+                  <FavoriteButton
+                    style={{ cursor: "pointer", color: "#999" }}
+                    onClick={handleToggleFavorite}
+                    data-guid={weapon.guid}
+                  />
+                );
+                const markedDone = doneGuids[weapon.guid];
+                return (
+                  <tr
+                    onClick={handleDebugclick}
+                    className={markedDone ? "unlock-row--done" : ""}
+                    data-weapon-guid={weapon.guid}
+                    data-unlock-id={unlockId}
+                    data-weapon-slug={weapon.slug}
+                    key={unlockId + weapon.guid}
+                  >
+                    <td>
+                      <b>{killsNeeded}</b> ({progress.actualValue}/
+                      {progress.valueNeeded})
+                    </td>
+                    <td>
+                      {serviceStar && `Service star ${serviceStar}`}
+                      {image && <WeaponAccessory imageSlug={image} />}
+                      <WordBreaked text={attachmentName} />
+                    </td>
+                    <td>
+                      <span style={{ float: "left" }}>
+                        {weapon.slug.toUpperCase()}
+                      </span>
+                      <span style={{ float: "right" }}>{favoriteButton}</span>
+                    </td>
+                    <td>{weapon.category}</td>
+                    <td>
+                      <Button
+                        data-guid={weapon.guid}
+                        size="sm"
+                        variant="outline-secondary"
+                        onClick={handleDoneClicked}
+                      >
+                        {markedDone ? "undo" : "done"}
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              }
+            )}
           </tbody>
         </Table>
       </Col>
