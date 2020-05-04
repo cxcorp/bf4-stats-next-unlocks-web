@@ -337,29 +337,18 @@ const Unlocks = ({ nextUnlocks, dataDate, error }) => {
     >
       <Row className="pt-3 pt-sm-5 justify-content-md-center">
         <UnlocksTable unlocks={nextUnlocks}>
-          <Row>
-            <Col>
-              <p style={{ display: "flex", alignItems: "baseline" }}>
-                <span>
-                  Updated <DataDate date={new Date(dataDate)} />
-                </span>
-                {loading ? (
-                  <LoadingButton
-                    style={{ marginLeft: "auto" }}
-                    variant="outline-primary"
-                  />
-                ) : (
-                  <Button
-                    style={{ marginLeft: "auto" }}
-                    variant="outline-primary"
-                    onClick={handleRefreshClicked}
-                  >
-                    Refresh
-                  </Button>
-                )}
-              </p>
-            </Col>
-          </Row>
+          <p>
+            Updated <DataDate date={new Date(dataDate)} />
+          </p>
+          <p>
+            {loading ? (
+              <LoadingButton variant="outline-primary" />
+            ) : (
+              <Button variant="outline-primary" onClick={handleRefreshClicked}>
+                Refresh
+              </Button>
+            )}
+          </p>
         </UnlocksTable>
       </Row>
     </Layout>
