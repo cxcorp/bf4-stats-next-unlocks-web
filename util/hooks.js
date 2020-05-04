@@ -34,7 +34,6 @@ export const usePersistedState = (defaultValue, localStorageKey) => {
     const newVal = state[0];
     const timeoutToken = setTimeout(() => {
       tryCatch(() => {
-        console.log("set", newVal);
         localStorage.setItem(localStorageKey, JSON.stringify(newVal));
       });
     }, 300);
