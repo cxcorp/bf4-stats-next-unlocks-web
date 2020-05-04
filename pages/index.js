@@ -5,6 +5,7 @@ import { Container, Row, Col } from "react-bootstrap";
 
 import * as BattlelogCommon from "../data/common";
 import UserSearchForm from "../components/UserSearchForm";
+import { GithubIcon } from "../components/GithubIcon";
 
 const Index = () => {
   const [loading, setLoading] = useState(false);
@@ -30,7 +31,20 @@ const Index = () => {
       <Container>
         <Row className="pt-3 pt-sm-5">
           <Col lg={9}>
-            <h1>BF4 Next Attachment Unlocks</h1>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <h1>BF4 Next Attachment Unlocks</h1>
+              <a
+                style={{ marginLeft: "auto" }}
+                rel="noopener"
+                href="https://github.com/cxcorp/bf4-stats-next-unlocks-web"
+              >
+                <GithubIcon />
+                <img
+                  className="ml-2"
+                  src="https://img.shields.io/github/issues/cxcorp/bf4-stats-next-unlocks-web?style=social"
+                />
+              </a>
+            </div>
             <UserSearchForm
               className="mt-5"
               isPageLoading={loading}
