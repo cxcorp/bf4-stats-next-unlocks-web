@@ -7,15 +7,22 @@ import { Container, Row, Col, Table, Button, Form } from "react-bootstrap";
 import formatDistance from "date-fns/formatDistance";
 
 import { LOCALSTORAGE_PERSONA_ID_KEY } from "../../common";
+import { useOnCtrlClick, usePersistedState } from "../../util/hooks";
+import { maxBy, toLookup, setValuesTo } from "../../util";
 import { weaponCategories } from "../../data/weaponCategories";
 import { getNextUnlocks } from "../../data";
 import IdForm from "../../components/IdForm";
 import LoadingButton from "../../components/LoadingButton";
 import WeaponAccessory from "../../components/WeaponAccessory";
-import { useOnCtrlClick, usePersistedState } from "../../util/hooks";
-import { maxBy, toLookup, setValuesTo } from "../../util";
+import UserSearchForm from "../../components/UserSearchForm";
 
-const Layout = ({ id, loading = false, onIdFormSubmit, children }) => {
+const Layout = ({
+  id,
+  loading = false,
+  onIdFormSubmit,
+  onUserSearchSelected,
+  children,
+}) => {
   return (
     <>
       <Head>
@@ -23,15 +30,16 @@ const Layout = ({ id, loading = false, onIdFormSubmit, children }) => {
       </Head>
 
       <Container>
-        <Row className="pt-3 pt-sm-5 justify-content-md-center">
+        <Row className="pt-3 pt-sm-5">
           <Col lg={9}>
             <Link href="/">
               <a>
                 <h1>BF4 Next Attachment Unlocks</h1>
               </a>
             </Link>
+            <UserSearchForm className="mt-5" onSelect={onUserSearchSelected} />
             <IdForm
-              className="mt-5"
+              className="mt-3"
               loading={loading}
               defaultId={id}
               onSubmit={onIdFormSubmit}
@@ -264,6 +272,11 @@ const Unlocks = ({ nextUnlocks, dataDate, error }) => {
 
   const [loading, setLoading] = useState(false);
 
+  // set loading = false if nextjs just updates the props instead of doing a page reload
+  useEffect(() => {
+    setLoading(false);
+  }, [personaId]);
+
   const handleRefreshClicked = useCallback(
     (e) => {
       e.preventDefault();
@@ -288,6 +301,10 @@ const Unlocks = ({ nextUnlocks, dataDate, error }) => {
     [personaId]
   );
 
+  const handleUserSearchFormSelected = useCallback(({ personaId }) => {
+    handleIdFormSubmit(personaId);
+  }, []);
+
   useEffect(() => {
     if (error) {
       return;
@@ -301,7 +318,11 @@ const Unlocks = ({ nextUnlocks, dataDate, error }) => {
 
   if (error) {
     return (
-      <Layout id={personaId} onIdFormSubmit={handleIdFormSubmit}>
+      <Layout
+        id={personaId}
+        onIdFormSubmit={handleIdFormSubmit}
+        onUserSearchSelected={handleUserSearchFormSelected}
+      >
         Error: {error}
       </Layout>
     );
@@ -312,6 +333,7 @@ const Unlocks = ({ nextUnlocks, dataDate, error }) => {
       id={personaId}
       loading={loading}
       onIdFormSubmit={handleIdFormSubmit}
+      onUserSearchSelected={handleUserSearchFormSelected}
     >
       <Row className="pt-3 pt-sm-5 justify-content-md-center">
         <UnlocksTable unlocks={nextUnlocks}>
