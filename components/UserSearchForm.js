@@ -7,12 +7,18 @@ import * as BattlelogCommon from "../data/common";
 
 const PlatformBadgeOption = (props) => {
   const label = props.children;
-  const platform = BattlelogCommon.namespaceToPlatform(props.data.namespace);
+  const platform =
+    props.data &&
+    BattlelogCommon.platformIntToHumanReadable(
+      BattlelogCommon.getPlatformIntFromSearchResult(props.data)
+    );
   return (
     <components.Option {...props}>
-      <Badge variant="light">
-        {platform === "xbox360" ? "XBOX 360" : platform.toUpperCase()}
-      </Badge>{" "}
+      {platform && (
+        <Badge variant="light" className="mr-2">
+          {platform}
+        </Badge>
+      )}
       {label}
     </components.Option>
   );
@@ -37,7 +43,10 @@ const loadSearchResults = async (searchTerm) => {
 };
 
 const selectOptionLabel = (obj) => obj.personaName;
-const selectOptionValue = (obj) => obj.personaId;
+const selectOptionValue = (obj) => {
+  const platformInt = BattlelogCommon.getPlatformIntFromSearchResult(obj);
+  return `${obj.personaId}/${platformInt}`;
+};
 const selectStyles = { menu: (provided) => ({ ...provided, zIndex: 5 }) };
 const selectComponents = {
   Option: PlatformBadgeOption,
@@ -45,6 +54,7 @@ const selectComponents = {
 
 const UserSearchForm = ({
   className,
+  isPageLoading,
   instanceId = "user-search-form",
   onSelect,
 }) => {
@@ -57,6 +67,11 @@ const UserSearchForm = ({
     },
     [onSelect]
   );
+
+  const pageLoadingOpts = isPageLoading && {
+    isDisabled: true,
+    isLoading: true,
+  };
 
   return (
     <>
@@ -73,6 +88,7 @@ const UserSearchForm = ({
             loadOptions={loadSearchResults}
             getOptionLabel={selectOptionLabel}
             getOptionValue={selectOptionValue}
+            {...pageLoadingOpts}
           />
         </Form.Group>
       </div>

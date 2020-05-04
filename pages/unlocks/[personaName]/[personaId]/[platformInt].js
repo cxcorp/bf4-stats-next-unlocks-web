@@ -1,32 +1,51 @@
-import { useState, useEffect, useCallback, createRef } from "react";
+import { useState, useEffect, useCallback } from "react";
+import PT from "prop-types";
 import axios from "axios";
 import Head from "next/head";
 import Router, { useRouter } from "next/router";
 import Link from "next/link";
-import { Container, Row, Col, Table, Button, Form } from "react-bootstrap";
+import {
+  Container,
+  Badge,
+  Row,
+  Col,
+  Button,
+  Table,
+  Form,
+} from "react-bootstrap";
 import formatDistance from "date-fns/formatDistance";
 
-import { LOCALSTORAGE_PERSONA_ID_KEY } from "../../common";
-import { useOnCtrlClick, usePersistedState } from "../../util/hooks";
-import { maxBy, toLookup, setValuesTo } from "../../util";
-import { weaponCategories } from "../../data/weaponCategories";
-import { getNextUnlocks } from "../../data";
-import IdForm from "../../components/IdForm";
-import LoadingButton from "../../components/LoadingButton";
-import WeaponAccessory from "../../components/WeaponAccessory";
-import UserSearchForm from "../../components/UserSearchForm";
+import { maxBy, toLookup, setValuesTo } from "../../../../util";
+import { getNextUnlocks } from "../../../../data";
+import { weaponCategories } from "../../../../data/weaponCategories";
+import * as BattlelogCommon from "../../../../data/common";
+import { useOnCtrlClick, usePersistedState } from "../../../../util/hooks";
+import { WordBreaked } from "../../../../util/components";
+import LoadingButton from "../../../../components/LoadingButton";
+import UserSearchForm from "../../../../components/UserSearchForm";
+import UnlocksTable from "../../../../components/UnlocksTable";
+import WeaponAccessory from "../../../../components/WeaponAccessory";
+
+const CurrentPersona = ({ className, platformInt, name }) => (
+  <h2 className={className}>
+    <Badge variant="secondary" className="mr-2">
+      {BattlelogCommon.platformIntToHumanReadable(platformInt)}
+    </Badge>
+    {name}
+  </h2>
+);
 
 const Layout = ({
-  id,
-  loading = false,
-  onIdFormSubmit,
+  title,
+  isPageLoading,
+  persona,
   onUserSearchSelected,
   children,
 }) => {
   return (
     <>
       <Head>
-        <title>Player {id} | BF4 Next Attachment Unlocks</title>
+        <title>{title}</title>
       </Head>
 
       <Container>
@@ -37,14 +56,17 @@ const Layout = ({
                 <h1>BF4 Next Attachment Unlocks</h1>
               </a>
             </Link>
-            <UserSearchForm className="mt-5" onSelect={onUserSearchSelected} />
-            <IdForm
-              className="mt-3"
-              loading={loading}
-              defaultId={id}
-              onSubmit={onIdFormSubmit}
+            <UserSearchForm
+              className="mt-5"
+              isPageLoading={isPageLoading}
+              onSelect={onUserSearchSelected}
             />
             <hr />
+            <CurrentPersona
+              className="mt-2 mt-sm-4"
+              platformInt={persona.platformInt}
+              name={persona.name}
+            />
           </Col>
         </Row>
         {children}
@@ -53,17 +75,16 @@ const Layout = ({
   );
 };
 
-const WordBreaked = ({ children: text }) => {
-  if (!text || typeof text !== "string") {
-    return text;
-  }
-
-  return text.split(/(?=[A-Z])/).map((word, i) => (
-    <React.Fragment key={word + i}>
-      <span>{word}</span>
-      <wbr />
-    </React.Fragment>
-  ));
+Layout.propTypes = {
+  title: PT.string.isRequired,
+  isPageLoading: PT.bool,
+  persona: PT.shape({
+    name: PT.string.isRequired,
+    id: PT.oneOfType([PT.string, PT.number]).isRequired,
+    platformInt: PT.number.isRequired,
+  }),
+  onUserSearchSelected: PT.func.isRequired,
+  children: PT.node,
 };
 
 const UnlocksTable = ({ unlocks, children: sidebar }) => {
@@ -218,7 +239,7 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
                       <td>
                         {serviceStar && `Service star ${serviceStar}`}
                         {image && <WeaponAccessory imageSlug={image} />}
-                        <WordBreaked>{attachmentName}</WordBreaked>
+                        <WordBreaked text={attachmentName} />
                       </td>
                       <td>{weapon.slug.toUpperCase()}</td>
                       <td>{weapon.category}</td>
@@ -268,14 +289,16 @@ const DataDate = ({ date }) => {
 
 const Unlocks = ({ nextUnlocks, dataDate, error }) => {
   const router = useRouter();
-  const { personaId } = router.query;
+  const { personaId, personaName } = router.query;
+  const platformInt = Number(router.query.platformInt);
+  const currentPersona = { id: personaId, name: personaName, platformInt };
 
   const [loading, setLoading] = useState(false);
 
-  // set loading = false if nextjs just updates the props instead of doing a page reload
+  // set loading = false when nextjs just updates the props instead of doing a page reload
   useEffect(() => {
     setLoading(false);
-  }, [personaId]);
+  }, [dataDate, personaId, platformInt, personaName]);
 
   const handleRefreshClicked = useCallback(
     (e) => {
@@ -286,41 +309,39 @@ const Unlocks = ({ nextUnlocks, dataDate, error }) => {
     [personaId]
   );
 
-  const handleIdFormSubmit = useCallback(
-    (newPersonaId) => {
+  const handleUserSearchFormSelected = useCallback(
+    (user) => {
       setLoading(true);
 
-      // nextjs won't unmount this component if it's navigating to the same page
-      // -> force reload
-      if (newPersonaId === personaId) {
+      const newPlatformInt = BattlelogCommon.getPlatformIntFromSearchResult(
+        user
+      );
+
+      // same persona, just reload the page or nextjs won't getServerSideProps()
+      if (user.personaId === personaId && user.platformInt === platformInt) {
         window.location.reload();
-      } else {
-        Router.push("/unlocks/[personaId]", `/unlocks/${newPersonaId}`);
+        return;
       }
+
+      const uriParts = [
+        user.personaName,
+        user.personaId,
+        newPlatformInt,
+      ].map((s) => encodeURI(s));
+      Router.push(
+        "/unlocks/[personaName]/[personaId]/[platformInt]",
+        `/unlocks/${uriParts.join("/")}`
+      );
     },
-    [personaId]
+    [personaId, platformInt, personaName]
   );
-
-  const handleUserSearchFormSelected = useCallback(({ personaId }) => {
-    handleIdFormSubmit(personaId);
-  }, []);
-
-  useEffect(() => {
-    if (error) {
-      return;
-    }
-    try {
-      localStorage.setItem(LOCALSTORAGE_PERSONA_ID_KEY, personaId);
-    } catch (e) {
-      console.error("Failed to persist persona ID to localStorage", e);
-    }
-  }, [personaId, error]);
 
   if (error) {
     return (
       <Layout
-        id={personaId}
-        onIdFormSubmit={handleIdFormSubmit}
+        title={`Player ${personaName} | BF4 Next Attachment Unlocks`}
+        isPageLoading={loading}
+        persona={currentPersona}
         onUserSearchSelected={handleUserSearchFormSelected}
       >
         Error: {error}
@@ -330,12 +351,12 @@ const Unlocks = ({ nextUnlocks, dataDate, error }) => {
 
   return (
     <Layout
-      id={personaId}
-      loading={loading}
-      onIdFormSubmit={handleIdFormSubmit}
+      title={`Player ${personaName} | BF4 Next Attachment Unlocks`}
+      isPageLoading={loading}
+      persona={currentPersona}
       onUserSearchSelected={handleUserSearchFormSelected}
     >
-      <Row className="pt-3 pt-sm-5 justify-content-md-center">
+      <Row className="pt-2 pt-sm-3 justify-content-md-center">
         <UnlocksTable unlocks={nextUnlocks}>
           <p>
             Updated <DataDate date={new Date(dataDate)} />
@@ -355,8 +376,10 @@ const Unlocks = ({ nextUnlocks, dataDate, error }) => {
   );
 };
 
-export async function getServerSideProps({ params: { personaId } }) {
-  const PERSONA_ID_REGEX = /^[0-9]{1,12}$/g;
+export async function getServerSideProps({
+  params: { personaId, platformInt },
+}) {
+  const PERSONA_ID_REGEX = /^[0-9]{1,15}$/g;
   if (!PERSONA_ID_REGEX.test(personaId)) {
     return {
       props: {
@@ -365,9 +388,18 @@ export async function getServerSideProps({ params: { personaId } }) {
       },
     };
   }
+  const pint = Number(platformInt);
+  if (isNaN(pint)) {
+    return {
+      props: {
+        nextUnlocks: null,
+        error: "invalid platformInt",
+      },
+    };
+  }
 
   const { data } = await axios.get(
-    `https://battlelog.battlefield.com/bf4/warsawWeaponsPopulateStats/${personaId}/1/unlocks/`
+    `https://battlelog.battlefield.com/bf4/warsawWeaponsPopulateStats/${personaId}/${pint}/unlocks/`
   );
   return {
     props: {

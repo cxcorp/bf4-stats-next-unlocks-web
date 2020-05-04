@@ -1,34 +1,25 @@
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState } from "react";
 import Head from "next/head";
 import Router from "next/router";
-import { Container, Row, Col, Badge } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 
-import { LOCALSTORAGE_PERSONA_ID_KEY } from "../common";
-import IdForm from "../components/IdForm";
+import * as BattlelogCommon from "../data/common";
 import UserSearchForm from "../components/UserSearchForm";
 
 const Index = () => {
   const [loading, setLoading] = useState(false);
-  const [persistedPersonaId, setPersistedPersonaId] = useState(undefined);
 
-  const handleFormSubmit = useCallback((id) => {
+  const handleUserSearchFormSelected = useCallback((user) => {
     setLoading(true);
-    Router.push("/unlocks/[personaId]", `/unlocks/${id}`);
-  }, []);
 
-  const handleUserSearchFormSelected = useCallback(({ personaId }) => {
-    handleFormSubmit(personaId);
-  }, []);
-
-  useEffect(() => {
-    try {
-      const persistedId = localStorage.getItem(LOCALSTORAGE_PERSONA_ID_KEY);
-      if (persistedId) {
-        setPersistedPersonaId(persistedId);
-      }
-    } catch (e) {
-      console.error("Failed to read persisted persona ID from localStorage", e);
-    }
+    const platformInt = BattlelogCommon.getPlatformIntFromSearchResult(user);
+    const uriParts = [user.personaName, user.personaId, platformInt].map((s) =>
+      encodeURI(s)
+    );
+    Router.push(
+      "/unlocks/[personaName]/[personaId]/[platformInt]",
+      `/unlocks/${uriParts.join("/")}`
+    );
   }, []);
 
   return (
@@ -42,13 +33,8 @@ const Index = () => {
             <h1>BF4 Next Attachment Unlocks</h1>
             <UserSearchForm
               className="mt-5"
+              isPageLoading={loading}
               onSelect={handleUserSearchFormSelected}
-            />
-            <IdForm
-              className="mt-3"
-              defaultId={persistedPersonaId}
-              loading={loading}
-              onSubmit={handleFormSubmit}
             />
             <hr />
           </Col>

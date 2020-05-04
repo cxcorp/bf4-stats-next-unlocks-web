@@ -1,10 +1,11 @@
 import axios from "axios";
 import querystring from "querystring";
 
-const bf4GameBit = 2048;
+import { BF4_GAME_ID } from "../../data/common";
+
 const isBf4Persona = (persona) =>
   Object.values(persona.games).some(
-    (games) => (Number(games) & bf4GameBit) === bf4GameBit
+    (games) => (Number(games) & BF4_GAME_ID) === BF4_GAME_ID
   );
 
 export default async (req, res) => {
