@@ -78,6 +78,10 @@ const DataDate = ({ date }) => {
   const [referenceDate, setReferenceDate] = useState(new Date());
 
   useEffect(() => {
+    setReferenceDate(new Date());
+  }, [date]);
+
+  useEffect(() => {
     const token = setInterval(() => setReferenceDate(new Date()), 30000);
     return () => clearInterval(token);
   }, []);
@@ -91,6 +95,7 @@ const DataDate = ({ date }) => {
     </time>
   );
 };
+
 
 const Unlocks = ({ nextUnlocks, dataDate, error }) => {
   const router = useRouter();
