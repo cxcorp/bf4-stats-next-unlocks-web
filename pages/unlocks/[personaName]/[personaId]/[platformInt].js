@@ -12,6 +12,7 @@ import * as BattlelogCommon from "../../../../data/common";
 import LoadingButton from "../../../../components/LoadingButton";
 import UserSearchForm from "../../../../components/UserSearchForm";
 import UnlocksTable from "../../../../components/UnlocksTable";
+import { GithubIcon } from "../../../../components/GithubIcon";
 
 const CurrentPersona = ({ className, platformInt, name }) => (
   <h2 className={className}>
@@ -38,11 +39,21 @@ const Layout = ({
       <Container>
         <Row className="pt-3 pt-sm-5">
           <Col lg={9}>
-            <Link href="/">
-              <a>
-                <h1>BF4 Next Attachment Unlocks</h1>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Link href="/">
+                <a>
+                  <h1>BF4 Next Attachment Unlocks</h1>
+                </a>
+              </Link>
+              <a
+                style={{ marginLeft: "auto" }}
+                rel="noopener"
+                href="https://github.com/cxcorp/bf4-stats-next-unlocks-web"
+              >
+                <GithubIcon />
+                <img className="ml-2" src="https://img.shields.io/github/issues/cxcorp/bf4-stats-next-unlocks-web?style=social" />
               </a>
-            </Link>
+            </div>
             <UserSearchForm
               className="mt-5"
               isPageLoading={isPageLoading}
