@@ -196,7 +196,7 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
                       <span style={{ float: "right" }}>{favoriteButton}</span>
                     </td>
                     <td>{weapon.category}</td>
-                    <td>
+                    <td className="px-0">
                       <Button
                         data-guid={weapon.guid}
                         size="sm"
