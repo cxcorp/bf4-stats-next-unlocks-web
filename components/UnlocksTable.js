@@ -7,6 +7,7 @@ import { weaponCategories } from "../data/weaponCategories";
 import { WordBreaked } from "../util/components";
 import { Heart, HeartOutline } from "../components/HeartIcon";
 import WeaponAccessory from "./WeaponAccessory";
+import { maxKills } from "../data/weaponMaxKills"
 
 const FAVORITES_STORAGE_KEY = "UNLOCKS-TABLE-FAVORITES";
 
@@ -143,6 +144,7 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
           <thead>
             <tr>
               <th>Kills needed</th>
+              <th>Progress</th>
               <th>Unlock</th>
               <th>Weapon</th>
               <th>Category</th>
@@ -183,6 +185,10 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
                     <td>
                       <b>{killsNeeded}</b> ({progress.actualValue}/
                       {progress.valueNeeded})
+                    </td>
+                    <td>
+                      <b>{(progress.actualValue/maxKills[weapon.guid]*100).toFixed(1)}%</b> ({progress.actualValue}/
+                      {maxKills[weapon.guid]})
                     </td>
                     <td>
                       {serviceStar && `Service star ${serviceStar}`}
