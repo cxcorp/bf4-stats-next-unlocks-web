@@ -145,7 +145,7 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
               <th>Kills needed</th>
               <th>Unlock</th>
               <th>Weapon</th>
-              <th>Weapon type</th>
+              <th>Category</th>
               <th></th>
             </tr>
           </thead>
