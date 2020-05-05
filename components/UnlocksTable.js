@@ -144,10 +144,11 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
           <thead>
             <tr>
               <th>Kills needed</th>
-              <th>Progress</th>
+              
               <th>Unlock</th>
               <th>Weapon</th>
               <th>Category</th>
+              <th>Completion</th>
               <th></th>
             </tr>
           </thead>
@@ -186,10 +187,7 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
                       <b>{killsNeeded}</b> ({progress.actualValue}/
                       {progress.valueNeeded})
                     </td>
-                    <td>
-                      <b>{(progress.actualValue/maxKills[weapon.guid]*100).toFixed(1)}%</b> ({progress.actualValue}/
-                      {maxKills[weapon.guid]})
-                    </td>
+                    
                     <td>
                       {serviceStar && `Service star ${serviceStar}`}
                       {image && <WeaponAccessory imageSlug={image} />}
@@ -202,6 +200,10 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
                       <span style={{ float: "right" }}>{favoriteButton}</span>
                     </td>
                     <td>{weapon.category}</td>
+                    <td>
+                      <b>{(progress.actualValue/maxKills[weapon.guid]*100).toFixed(0)}%</b> ({progress.actualValue}/
+                      {maxKills[weapon.guid]})
+                    </td>
                     <td className="px-0">
                       <Button
                         data-guid={weapon.guid}
