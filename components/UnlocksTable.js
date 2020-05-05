@@ -7,9 +7,65 @@ import { weaponCategories } from "../data/weaponCategories";
 import { WordBreaked } from "../util/components";
 import { Heart, HeartOutline } from "../components/HeartIcon";
 import WeaponAccessory from "./WeaponAccessory";
-import { maxKills } from "../data/weaponMaxKills"
+import { maxKills } from "../data/weaponMaxKills";
 
 const FAVORITES_STORAGE_KEY = "UNLOCKS-TABLE-FAVORITES";
+
+const CompletionBar = ({ progress, total }) => {
+  const percentage = ((progress / total) * 100).toFixed(0);
+
+  const hue = Math.floor(130 - (progress / total) * 130);
+  const color = `hsl(${hue}, 90%, 51%)`;
+
+  return (
+    <>
+      <div className="completion-bar">
+        <span className="completion-bar__percentage pb-1">{percentage}%</span>
+        <div className="completion-bar__bar">
+          <div
+            className="completion-bar__progression"
+            style={{ width: `${(progress / total) * 100}%`, background: color }}
+          ></div>
+        </div>
+        <span className="completion-bar__numbers">
+          {progress}/{total}
+        </span>
+      </div>
+      <style jsx>{`
+        .completion-bar {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .completion-bar__progression {
+          position: absolute;
+          left: 0;
+          top: 0;
+          height: 100%;
+        }
+
+        .completion-bar__bar {
+          position: relative;
+          height: 5px;
+          background: #f1e4d0;
+          width: 100%;
+        }
+
+        .completion-bar__percentage {
+          font-weight: bold;
+          font-size: 0.8rem;
+        }
+
+        .completion-bar__numbers {
+          font-size: 0.8rem;
+        }
+      `}</style>
+    </>
+  );
+};
 
 const UnlocksTable = ({ unlocks, children: sidebar }) => {
   const [favorites, setFavorites] = usePersistedState(
@@ -144,7 +200,6 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
           <thead>
             <tr>
               <th>Kills needed</th>
-              
               <th>Unlock</th>
               <th>Weapon</th>
               <th>Category</th>
@@ -187,7 +242,6 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
                       <b>{killsNeeded}</b> ({progress.actualValue}/
                       {progress.valueNeeded})
                     </td>
-                    
                     <td>
                       {serviceStar && `Service star ${serviceStar}`}
                       {image && <WeaponAccessory imageSlug={image} />}
@@ -200,9 +254,11 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
                       <span style={{ float: "right" }}>{favoriteButton}</span>
                     </td>
                     <td>{weapon.category}</td>
-                    <td>
-                      <b>{(progress.actualValue/maxKills[weapon.guid]*100).toFixed(0)}%</b> ({progress.actualValue}/
-                      {maxKills[weapon.guid]})
+                    <td className="p-0 py-1">
+                      <CompletionBar
+                        progress={progress.actualValue}
+                        total={maxKills[weapon.guid]}
+                      />
                     </td>
                     <td className="px-0">
                       <Button
