@@ -33,7 +33,7 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
   const handleDoneClicked = useCallback((e) => {
     const guid = e.target.dataset.guid;
     setDoneGuids((guids) => ({ ...guids, [guid]: !guids[guid] }));
-  });
+  }, []);
 
   const handleDebugclick = useOnCtrlClick((e) => {
     console.log(e.currentTarget.dataset);
