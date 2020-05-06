@@ -173,12 +173,23 @@ const SortableTh = ({
   const active = activeId === sorterId;
   return (
     <>
-      <th className="sortable" onClick={handleClick} {...props}>
+      <th
+        className={`sortable ${!active ? "sortable--inactive" : ""}`}
+        onClick={handleClick}
+        {...props}
+      >
         <div className="wrapper">
           <div className="label">{children}</div>
           <div className="icon">
-            {active &&
-              (direction === SortDir.ASC ? <ChevronUp /> : <ChevronDown />)}
+            {active ? (
+              direction === SortDir.ASC ? (
+                <ChevronUp />
+              ) : (
+                <ChevronDown />
+              )
+            ) : (
+              <ChevronDown />
+            )}
           </div>
         </div>
       </th>
@@ -197,6 +208,16 @@ const SortableTh = ({
 
         .icon {
           margin-left: auto;
+        }
+
+        .sortable--inactive .icon {
+          opacity: 0.3;
+
+          transition: opacity 150ms cubic-bezier(0, 0, 0.2, 1);
+        }
+
+        .sortable--inactive:hover .icon {
+          opacity: 0.75;
         }
       `}</style>
     </>
