@@ -4,10 +4,11 @@ import { Col, Table, Button, Form } from "react-bootstrap";
 import { useOnCtrlClick, usePersistedState } from "../util/hooks";
 import { maxBy, toLookup, setValuesTo } from "../util";
 import { weaponCategories } from "../data/weaponCategories";
+import { maxKills } from "../data/weaponMaxKills";
 import { WordBreaked } from "../util/components";
 import { Heart, HeartOutline } from "../components/HeartIcon";
+import { ChevronUp, ChevronDown } from "../components/ChevronIcon";
 import WeaponAccessory from "./WeaponAccessory";
-import { maxKills } from "../data/weaponMaxKills";
 
 const FAVORITES_STORAGE_KEY = "UNLOCKS-TABLE-FAVORITES";
 
@@ -67,7 +68,79 @@ const CompletionBar = ({ progress, total }) => {
   );
 };
 
+const Sorters = {
+  KillsNeeded: "KillsNeeded",
+  Category: "Category",
+  Completion: "Completion",
+};
+const SorterFn = {
+  [Sorters.KillsNeeded]: (a, b) => a.killsNeeded - b.killsNeeded,
+  [Sorters.Completion]: (a, b) =>
+    a.unlockProgress.actualValue / maxKills[a.weapon.guid] -
+    b.unlockProgress.actualValue / maxKills[b.weapon.guid],
+  [Sorters.Category]: (a, b) =>
+    a.weapon.category.localeCompare(b.weapon.category),
+};
+
+const SortDir = {
+  ASC: 1,
+  DESC: -1,
+};
+
+const SortableTh = ({
+  activeId,
+  direction,
+  sorterId,
+  onSort,
+  children,
+  ...props
+}) => {
+  const handleClick = useCallback(
+    (e) => {
+      onSort(sorterId);
+    },
+    [onSort, sorterId]
+  );
+
+  const active = activeId === sorterId;
+  return (
+    <>
+      <th className="sortable" onClick={handleClick} {...props}>
+        <div className="wrapper">
+          <div className="label">{children}</div>
+          <div className="icon">
+            {active && (direction === 1 ? <ChevronDown /> : <ChevronUp />)}
+          </div>
+        </div>
+      </th>
+      <style jsx>{`
+        th {
+          cursor: pointer;
+          user-select: none;
+        }
+
+        .wrapper {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .icon {
+          margin-left: auto;
+        }
+      `}</style>
+    </>
+  );
+};
+
 const UnlocksTable = ({ unlocks, children: sidebar }) => {
+  const [sorter, setSorter] = usePersistedState(
+    { id: Sorters.KillsNeeded, dir: SortDir.ASC },
+    "UNLOCKS-SORTER"
+  );
+  const unlocksSorter = (a, b) => SorterFn[sorter.id](a, b) * sorter.dir;
+
   const [favorites, setFavorites] = usePersistedState(
     {},
     FAVORITES_STORAGE_KEY
@@ -119,22 +192,41 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
     setFavorites((favorites) => ({ ...favorites, [guid]: !favorites[guid] }));
   }, []);
 
+  const handleSort = useCallback((newSorter) => {
+    setSorter((currentSorter) => ({
+      id: newSorter,
+      // if clicked on active sorter, just reverse the direction
+      // other wise default to ASC
+      dir:
+        currentSorter.id === newSorter ? currentSorter.dir * -1 : SortDir.ASC,
+    }));
+  }, []);
+
+  const sortableProps = (sorterId) => ({
+    activeId: sorter.id,
+    sorterId,
+    direction: sorter.dir,
+    onSort: handleSort,
+  });
+
   const largestCurrentKills = maxBy(
     unlocks,
     (unlock) => unlock.unlockProgress.actualValue
   );
 
-  const favoriteRows = unlocks.filter((u) => !!favorites[u.weapon.guid]);
-  const filteredRows = unlocks.filter(
-    (u) =>
-      // don't show favorites twice
-      !favorites[u.weapon.guid] &&
-      // current kills filter
-      u.unlockProgress.actualValue >= minCurrentKills &&
-      // weapon category filter
-      selectedCategories[u.weapon.category]
-  );
-  const renderRows = [...favoriteRows, ...filteredRows];
+  const favoriteUnlocks = unlocks.filter((u) => !!favorites[u.weapon.guid]);
+  const filteredUnlocks = unlocks
+    .filter(
+      (u) =>
+        // don't show favorites twice
+        !favorites[u.weapon.guid] &&
+        // current kills filter
+        u.unlockProgress.actualValue >= minCurrentKills &&
+        // weapon category filter
+        selectedCategories[u.weapon.category]
+    )
+    .sort(unlocksSorter);
+  const displayedUnlocks = [...favoriteUnlocks, ...filteredUnlocks];
 
   return (
     <>
@@ -199,16 +291,22 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
         <Table striped bordered>
           <thead>
             <tr>
-              <th>Kills needed</th>
+              <SortableTh {...sortableProps(Sorters.KillsNeeded)}>
+                Kills needed
+              </SortableTh>
               <th>Unlock</th>
               <th>Weapon</th>
-              <th>Category</th>
-              <th>Completion</th>
+              <SortableTh {...sortableProps(Sorters.Category)}>
+                Category
+              </SortableTh>
+              <SortableTh {...sortableProps(Sorters.Completion)}>
+                Completion
+              </SortableTh>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {renderRows.map(
+            {displayedUnlocks.map(
               ({
                 weapon,
                 attachmentName,
@@ -280,6 +378,10 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
       <style jsx>{`
         .unlock-row--done > td {
           opacity: 0.3;
+        }
+
+        .sortable {
+          cursor: pointer;
         }
       `}</style>
     </>
