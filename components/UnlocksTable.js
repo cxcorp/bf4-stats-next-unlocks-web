@@ -20,46 +20,46 @@ const CompletionBar = ({ progress, total }) => {
 
   return (
     <>
-      <div className="completion-bar">
-        <span className="completion-bar__percentage pb-1">{percentage}%</span>
-        <div className="completion-bar__bar">
+      <div className="wrapper">
+        <span className="percentage pb-1">{percentage}%</span>
+        <div className="bar-container">
           <div
-            className="completion-bar__progression"
+            className="bar"
             style={{ width: `${(progress / total) * 100}%`, background: color }}
           ></div>
         </div>
-        <span className="completion-bar__numbers">
+        <span className="numbers">
           {progress}/{total}
         </span>
       </div>
       <style jsx>{`
-        .completion-bar {
+        .wrapper {
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
         }
 
-        .completion-bar__progression {
-          position: absolute;
-          left: 0;
-          top: 0;
-          height: 100%;
-        }
-
-        .completion-bar__bar {
+        .bar-container {
           position: relative;
           height: 5px;
           background: #f1e4d0;
           width: 100%;
         }
 
-        .completion-bar__percentage {
+        .bar {
+          position: absolute;
+          left: 0;
+          top: 0;
+          height: 100%;
+        }
+
+        .percentage {
           font-weight: bold;
           font-size: 0.8rem;
         }
 
-        .completion-bar__numbers {
+        .numbers {
           font-size: 0.8rem;
         }
       `}</style>
