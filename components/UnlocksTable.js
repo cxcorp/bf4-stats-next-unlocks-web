@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { Col, Table, Button, Form } from "react-bootstrap";
 
-import { useOnCtrlClick, usePersistedState } from "~/util/hooks";
+import { usePersistedState } from "~/util/hooks";
 import { maxBy, toLookup, setValuesTo } from "~/util";
 import { weaponCategories } from "~/data/weaponCategories";
 import { maxKills } from "~/data/weaponMaxKills";
