@@ -51,7 +51,10 @@ const Layout = ({
                 href="https://github.com/cxcorp/bf4-stats-next-unlocks-web"
               >
                 <GithubIcon />
-                <img className="ml-2" src="https://img.shields.io/github/issues/cxcorp/bf4-stats-next-unlocks-web?style=social" />
+                <img
+                  className="ml-2"
+                  src="https://img.shields.io/github/issues/cxcorp/bf4-stats-next-unlocks-web?style=social"
+                />
               </a>
             </div>
             <UserSearchForm
