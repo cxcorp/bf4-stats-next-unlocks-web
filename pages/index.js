@@ -3,9 +3,9 @@ import Head from "next/head";
 import Router from "next/router";
 import { Container, Row, Col } from "react-bootstrap";
 
-import * as BattlelogCommon from "../data/common";
-import UserSearchForm from "../components/UserSearchForm";
-import { GithubIcon } from "../components/GithubIcon";
+import * as BattlelogCommon from "~/data/common";
+import UserSearchForm from "~/components/UserSearchForm";
+import { GithubIcon } from "~/components/GithubIcon";
 
 const Index = () => {
   const [loading, setLoading] = useState(false);

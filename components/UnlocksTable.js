@@ -1,13 +1,13 @@
 import { useState, useCallback } from "react";
 import { Col, Table, Button, Form } from "react-bootstrap";
 
-import { useOnCtrlClick, usePersistedState } from "../util/hooks";
-import { maxBy, toLookup, setValuesTo } from "../util";
-import { weaponCategories } from "../data/weaponCategories";
-import { maxKills } from "../data/weaponMaxKills";
-import { WordBreaked } from "../util/components";
-import { Heart, HeartOutline } from "../components/HeartIcon";
-import { ChevronUp, ChevronDown } from "../components/ChevronIcon";
+import { useOnCtrlClick, usePersistedState } from "~/util/hooks";
+import { maxBy, toLookup, setValuesTo } from "~/util";
+import { weaponCategories } from "~/data/weaponCategories";
+import { maxKills } from "~/data/weaponMaxKills";
+import { WordBreaked } from "~/util/components";
+import { Heart, HeartOutline } from "~/components/HeartIcon";
+import { ChevronUp, ChevronDown } from "~/components/ChevronIcon";
 import WeaponAccessory from "./WeaponAccessory";
 
 const FAVORITES_STORAGE_KEY = "UNLOCKS-TABLE-FAVORITES";

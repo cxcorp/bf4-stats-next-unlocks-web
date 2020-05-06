@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      // tell vscode about the ~ prefix in next.config.js
+      "~/*": ["./*"]
+    }
+  }
+}

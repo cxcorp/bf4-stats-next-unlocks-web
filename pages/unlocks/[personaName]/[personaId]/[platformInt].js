@@ -7,12 +7,12 @@ import Link from "next/link";
 import { Container, Badge, Row, Col, Button } from "react-bootstrap";
 import formatDistance from "date-fns/formatDistance";
 
-import { getNextUnlocks } from "../../../../data";
-import * as BattlelogCommon from "../../../../data/common";
-import LoadingButton from "../../../../components/LoadingButton";
-import UserSearchForm from "../../../../components/UserSearchForm";
-import UnlocksTable from "../../../../components/UnlocksTable";
-import { GithubIcon } from "../../../../components/GithubIcon";
+import { getNextUnlocks } from "~/data";
+import * as BattlelogCommon from "~/data/common";
+import LoadingButton from "~/components/LoadingButton";
+import UserSearchForm from "~/components/UserSearchForm";
+import UnlocksTable from "~/components/UnlocksTable";
+import { GithubIcon } from "~/components/GithubIcon";
 
 const CurrentPersona = ({ className, platformInt, name }) => (
   <h2 className={className}>
