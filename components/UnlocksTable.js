@@ -177,7 +177,8 @@ const SortableTh = ({
         <div className="wrapper">
           <div className="label">{children}</div>
           <div className="icon">
-            {active && (direction === 1 ? <ChevronDown /> : <ChevronUp />)}
+            {active &&
+              (direction === SortDir.ASC ? <ChevronUp /> : <ChevronDown />)}
           </div>
         </div>
       </th>
