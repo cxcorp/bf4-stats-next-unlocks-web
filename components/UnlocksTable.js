@@ -34,7 +34,6 @@ const CompletionBar = ({ progress, total }) => {
       </div>
       <style jsx>{`
         .completion-bar {
-          position: relative;
           display: flex;
           flex-direction: column;
           align-items: center;
