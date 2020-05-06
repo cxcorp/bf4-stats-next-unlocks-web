@@ -324,7 +324,7 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
 
         <Form.Group controlId="123">
           <Form.Label>
-            Only show unlocks with current kills > <b>{minCurrentKills}</b>
+            Only show unlocks with current kills ≥ <b>{minCurrentKills}</b>
           </Form.Label>
           <Form.Control
             type="range"
