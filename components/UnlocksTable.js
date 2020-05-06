@@ -214,7 +214,9 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
     (unlock) => unlock.unlockProgress.actualValue
   );
 
-  const favoriteUnlocks = unlocks.filter((u) => !!favorites[u.weapon.guid]);
+  const favoriteUnlocks = unlocks
+    .filter((u) => !!favorites[u.weapon.guid])
+    .sort(unlocksSorter);
   const filteredUnlocks = unlocks
     .filter(
       (u) =>
