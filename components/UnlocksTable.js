@@ -68,6 +68,75 @@ const CompletionBar = ({ progress, total }) => {
   );
 };
 
+const UnlocksTableRow = ({
+  unlock: {
+    weapon,
+    attachmentName,
+    image,
+    unlockId,
+    unlockProgress: progress,
+    killsNeeded,
+    serviceStar,
+  },
+  isFavorited,
+  isMarkedDone,
+  onFavoriteToggled,
+  onDoneToggled,
+}) => {
+  const handleFavoriteClicked = useCallback(() => {
+    onFavoriteToggled(weapon.guid);
+  }, [onFavoriteToggled, weapon.guid]);
+  const handleDoneClicked = useCallback(() => {
+    onDoneToggled(weapon.guid);
+  }, [onDoneToggled, weapon.guid]);
+
+  const FavoriteButton = isFavorited ? Heart : HeartOutline;
+  return (
+    <>
+      <tr className={isMarkedDone ? "done" : ""}>
+        <td>
+          <b>{killsNeeded}</b> ({progress.actualValue}/{progress.valueNeeded})
+        </td>
+        <td>
+          {serviceStar && `Service star ${serviceStar}`}
+          {image && <WeaponAccessory imageSlug={image} />}
+          <WordBreaked text={attachmentName} />
+        </td>
+        <td>
+          <span style={{ float: "left" }}>{weapon.slug.toUpperCase()}</span>
+          <span style={{ float: "right" }}>
+            <FavoriteButton
+              style={{ cursor: "pointer", color: "#999" }}
+              onClick={handleFavoriteClicked}
+            />
+          </span>
+        </td>
+        <td>{weapon.category}</td>
+        <td className="p-0 py-1">
+          <CompletionBar
+            progress={progress.actualValue}
+            total={maxKills[weapon.guid]}
+          />
+        </td>
+        <td className="px-0">
+          <Button
+            size="sm"
+            variant="outline-secondary"
+            onClick={handleDoneClicked}
+          >
+            {isMarkedDone ? "undo" : "done"}
+          </Button>
+        </td>
+      </tr>
+      <style jsx>{`
+        .done > td {
+          opacity: 0.3;
+        }
+      `}</style>
+    </>
+  );
+};
+
 const Sorters = {
   KillsNeeded: "KillsNeeded",
   Category: "Category",
@@ -160,13 +229,8 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
     setMinKills(e.target.value);
   }, []);
 
-  const handleDoneClicked = useCallback((e) => {
-    const guid = e.target.dataset.guid;
-    setDoneGuids((guids) => ({ ...guids, [guid]: !guids[guid] }));
-  }, []);
-
-  const handleDebugclick = useOnCtrlClick((e) => {
-    console.log(e.currentTarget.dataset);
+  const handleDoneToggled = useCallback((weaponGuid) => {
+    setDoneGuids((guids) => ({ ...guids, [weaponGuid]: !guids[weaponGuid] }));
   }, []);
 
   const handleWeaponCategoryFilterChecked = useCallback((e) => {
@@ -187,9 +251,11 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
     setSelectedCategories((categories) => setValuesTo(categories, false));
   }, []);
 
-  const handleToggleFavorite = useCallback((e) => {
-    const guid = e.currentTarget.dataset.guid;
-    setFavorites((favorites) => ({ ...favorites, [guid]: !favorites[guid] }));
+  const handleFavoriteToggled = useCallback((weaponGuid) => {
+    setFavorites((favorites) => ({
+      ...favorites,
+      [weaponGuid]: !favorites[weaponGuid],
+    }));
   }, []);
 
   const handleSort = useCallback((newSorter) => {
@@ -228,7 +294,6 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
         selectedCategories[u.weapon.category]
     )
     .sort(unlocksSorter);
-  const displayedUnlocks = [...favoriteUnlocks, ...filteredUnlocks];
 
   return (
     <>
@@ -307,83 +372,39 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
               <th></th>
             </tr>
           </thead>
+          <tbody className="favorites">
+            {favoriteUnlocks.map((unlock) => (
+              <UnlocksTableRow
+                key={`${unlock.unlockId}_${unlock.weapon.guid}`}
+                unlock={unlock}
+                isFavorited={!!favorites[unlock.weapon.guid]}
+                onFavoriteToggled={handleFavoriteToggled}
+                isMarkedDone={!!doneGuids[unlock.weapon.guid]}
+                onDoneToggled={handleDoneToggled}
+              />
+            ))}
+          </tbody>
           <tbody>
-            {displayedUnlocks.map(
-              ({
-                weapon,
-                attachmentName,
-                image,
-                unlockId,
-                unlockProgress: progress,
-                killsNeeded,
-                serviceStar,
-              }) => {
-                const FavoriteButton = favorites[weapon.guid]
-                  ? Heart
-                  : HeartOutline;
-                const favoriteButton = (
-                  <FavoriteButton
-                    style={{ cursor: "pointer", color: "#999" }}
-                    onClick={handleToggleFavorite}
-                    data-guid={weapon.guid}
-                  />
-                );
-                const markedDone = doneGuids[weapon.guid];
-                return (
-                  <tr
-                    onClick={handleDebugclick}
-                    className={markedDone ? "unlock-row--done" : ""}
-                    data-weapon-guid={weapon.guid}
-                    data-unlock-id={unlockId}
-                    data-weapon-slug={weapon.slug}
-                    key={unlockId + weapon.guid}
-                  >
-                    <td>
-                      <b>{killsNeeded}</b> ({progress.actualValue}/
-                      {progress.valueNeeded})
-                    </td>
-                    <td>
-                      {serviceStar && `Service star ${serviceStar}`}
-                      {image && <WeaponAccessory imageSlug={image} />}
-                      <WordBreaked text={attachmentName} />
-                    </td>
-                    <td>
-                      <span style={{ float: "left" }}>
-                        {weapon.slug.toUpperCase()}
-                      </span>
-                      <span style={{ float: "right" }}>{favoriteButton}</span>
-                    </td>
-                    <td>{weapon.category}</td>
-                    <td className="p-0 py-1">
-                      <CompletionBar
-                        progress={progress.actualValue}
-                        total={maxKills[weapon.guid]}
-                      />
-                    </td>
-                    <td className="px-0">
-                      <Button
-                        data-guid={weapon.guid}
-                        size="sm"
-                        variant="outline-secondary"
-                        onClick={handleDoneClicked}
-                      >
-                        {markedDone ? "undo" : "done"}
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              }
-            )}
+            {filteredUnlocks.map((unlock) => (
+              <UnlocksTableRow
+                key={`${unlock.unlockId}_${unlock.weapon.guid}`}
+                unlock={unlock}
+                isFavorited={!!favorites[unlock.weapon.guid]}
+                onFavoriteToggled={handleFavoriteToggled}
+                isMarkedDone={!!doneGuids[unlock.weapon.guid]}
+                onDoneToggled={handleDoneToggled}
+              />
+            ))}
           </tbody>
         </Table>
       </Col>
       <style jsx>{`
-        .unlock-row--done > td {
-          opacity: 0.3;
-        }
-
         .sortable {
           cursor: pointer;
+        }
+
+        .favorites {
+          border-bottom: 5px solid #fff;
         }
       `}</style>
     </>
