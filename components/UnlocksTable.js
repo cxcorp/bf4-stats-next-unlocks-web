@@ -456,7 +456,7 @@ const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
 
   const favoriteUnlocks = useMemo(
     () => unlocks.filter((u) => !!favorites[u.weapon.guid]).sort(unlocksSorter),
-    [favorites, unlocksSorter]
+    [unlocks, favorites, unlocksSorter]
   );
   const filteredUnlocks = useMemo(
     () =>
@@ -471,7 +471,7 @@ const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
             selectedCategories[u.weapon.category]
         )
         .sort(unlocksSorter),
-    [favorites, minCurrentKills, selectedCategories, unlocksSorter]
+    [unlocks, favorites, minCurrentKills, selectedCategories, unlocksSorter]
   );
 
   return (
