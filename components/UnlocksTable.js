@@ -258,7 +258,7 @@ const UnlocksTable = ({
 
   return (
     <>
-      <Table striped bordered>
+      <Table striped bordered responsive>
         <thead>
           <tr>
             <SortableTh {...getSortableProps(Sorters.KillsNeeded)}>
