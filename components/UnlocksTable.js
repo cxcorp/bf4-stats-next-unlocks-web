@@ -238,10 +238,6 @@ const unlocksTableStyle = css.resolve`
   table {
     font-size: 0.9rem;
   }
-
-  .favorites {
-    border-bottom: 5px solid #fff;
-  }
 `;
 
 const UnlocksTable = ({
@@ -294,6 +290,11 @@ const UnlocksTable = ({
         <tbody className="favorites">{favoriteUnlocks.map(makeRow)}</tbody>
         <tbody>{unlocks.map(makeRow)}</tbody>
       </Table>
+      <style jsx>{`
+        .favorites {
+          border-bottom: 5px solid #fff;
+        }
+      `}</style>
       {unlocksTableStyle.styles}
     </>
   );
