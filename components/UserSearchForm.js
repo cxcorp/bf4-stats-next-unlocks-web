@@ -1,10 +1,18 @@
-import { useCallback } from "react";
+import { useCallback, useMemo, useContext } from "react";
 import AsyncSelect from "react-select/async";
 import { components } from "react-select";
 import { Form, Badge } from "react-bootstrap";
 
 import * as BattlelogCommon from "~/data/common";
 import { usePersistedState } from "~/util/hooks";
+
+const ClearSavedContext = React.createContext(null);
+
+const areOptionsEqual = (a, b) =>
+  a.personaName === b.personaName &&
+  a.personaId === b.personaId &&
+  BattlelogCommon.getPlatformIntFromSearchResult(a) ===
+    BattlelogCommon.getPlatformIntFromSearchResult(b);
 
 const PlatformBadgeOption = (props) => {
   const label = props.children;
@@ -22,6 +30,77 @@ const PlatformBadgeOption = (props) => {
       )}
       {label}
     </components.Option>
+  );
+};
+
+const ClearSavedMenuList = (props) => {
+  const clearSaved = useContext(ClearSavedContext);
+  const hasDefaultOptions = useMemo(() => {
+    return (
+      Array.isArray(props.selectProps.defaultOptions) &&
+      props.selectProps.defaultOptions.length > 0
+    );
+  }, [props.selectProps.defaultOptions]);
+
+  const isShowingDefaultOptions = useMemo(() => {
+    return (
+      hasDefaultOptions &&
+      props.options.length === props.selectProps.defaultOptions.length &&
+      props.options.every((option) =>
+        props.selectProps.defaultOptions.some((defaultOption) =>
+          areOptionsEqual(option, defaultOption)
+        )
+      )
+    );
+  }, [hasDefaultOptions, props.options, props.selectProps.defaultOptions]);
+
+  return (
+    <>
+      <components.MenuList {...props}>
+        {props.children}
+        <div
+          className={`wrapper ${
+            !hasDefaultOptions || !isShowingDefaultOptions ? "hidden" : ""
+          }`}
+        >
+          <span className="clear-button" onClick={clearSaved}>
+            <img className="close-icon pr-1" src="/close.svg" />
+            Clear saved
+          </span>
+        </div>
+      </components.MenuList>
+      <style jsx>{`
+        .wrapper {
+          border-top: 1px solid #ddd;
+          padding: 4px 12px;
+          font-size: 0.85rem;
+          display: flex;
+          color: #0056b3;
+          background: #fbfbfc;
+        }
+
+        .clear-button {
+          margin-left: auto;
+          cursor: pointer;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+        }
+
+        .clear-button:hover {
+          text-decoration: underline;
+        }
+
+        .close-icon {
+          width: 14px;
+          height: 14px;
+        }
+
+        .hidden {
+          display: none;
+        }
+      `}</style>
+    </>
   );
 };
 
@@ -51,6 +130,7 @@ const selectOptionValue = (obj) => {
 const selectStyles = { menu: (provided) => ({ ...provided, zIndex: 5 }) };
 const selectComponents = {
   Option: PlatformBadgeOption,
+  MenuList: ClearSavedMenuList,
 };
 
 const UserSearchForm = ({
@@ -99,44 +179,36 @@ const UserSearchForm = ({
 };
 
 const CacheingUserSearchForm = ({ onSelect, ...props }) => {
-  const [previousSelections, setPreviousSelections] = usePersistedState(
-    [],
-    "USER-SEARCH-FORM-PREVIOUS"
-  );
+  const [
+    previousSelections,
+    setPreviousSelections,
+    clearPreviousSelections,
+  ] = usePersistedState([], "USER-SEARCH-FORM-PREVIOUS");
 
   const handleSelect = useCallback(
-    (option) => {
+    (selectedOption) => {
       setPreviousSelections((prev) => {
-        const platformInt = BattlelogCommon.getPlatformIntFromSearchResult(
-          option
-        );
-
-        if (
-          prev.find(
-            (p) =>
-              p.personaName === option.personaName &&
-              p.personaId === option.personaId &&
-              BattlelogCommon.getPlatformIntFromSearchResult(p) === platformInt
-          )
-        ) {
+        if (prev.find((p) => areOptionsEqual(p, selectedOption))) {
           // already cached
           return prev;
         }
 
-        return [...prev, option];
+        return [...prev, selectedOption];
       });
 
-      onSelect(option);
+      onSelect(selectedOption);
     },
-    [setPreviousSelections]
+    [onSelect, setPreviousSelections, areOptionsEqual]
   );
 
   return (
-    <UserSearchForm
-      {...props}
-      defaultOptions={previousSelections}
-      onSelect={handleSelect}
-    />
+    <ClearSavedContext.Provider value={clearPreviousSelections}>
+      <UserSearchForm
+        {...props}
+        defaultOptions={previousSelections}
+        onSelect={handleSelect}
+      />
+    </ClearSavedContext.Provider>
   );
 };
 
