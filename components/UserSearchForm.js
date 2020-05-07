@@ -4,6 +4,7 @@ import { components } from "react-select";
 import { Form, Badge } from "react-bootstrap";
 
 import * as BattlelogCommon from "~/data/common";
+import { usePersistedState } from "~/util/hooks";
 
 const PlatformBadgeOption = (props) => {
   const label = props.children;
@@ -57,6 +58,7 @@ const UserSearchForm = ({
   isPageLoading,
   instanceId = "user-search-form",
   onSelect,
+  defaultOptions = true,
 }) => {
   const handleChange = useCallback(
     (selectedOption, { action }) => {
@@ -83,7 +85,7 @@ const UserSearchForm = ({
             components={selectComponents}
             onChange={handleChange}
             instanceId={instanceId}
-            defaultOptions
+            defaultOptions={defaultOptions}
             cacheOptions
             loadOptions={loadSearchResults}
             getOptionLabel={selectOptionLabel}
@@ -96,4 +98,46 @@ const UserSearchForm = ({
   );
 };
 
-export default UserSearchForm;
+const CacheingUserSearchForm = ({ onSelect, ...props }) => {
+  const [previousSelections, setPreviousSelections] = usePersistedState(
+    [],
+    "USER-SEARCH-FORM-PREVIOUS"
+  );
+
+  const handleSelect = useCallback(
+    (option) => {
+      setPreviousSelections((prev) => {
+        const platformInt = BattlelogCommon.getPlatformIntFromSearchResult(
+          option
+        );
+
+        if (
+          prev.find(
+            (p) =>
+              p.personaName === option.personaName &&
+              p.personaId === option.personaId &&
+              BattlelogCommon.getPlatformIntFromSearchResult(p) === platformInt
+          )
+        ) {
+          // already cached
+          return prev;
+        }
+
+        return [...prev, option];
+      });
+
+      onSelect(option);
+    },
+    [setPreviousSelections]
+  );
+
+  return (
+    <UserSearchForm
+      {...props}
+      defaultOptions={previousSelections}
+      onSelect={handleSelect}
+    />
+  );
+};
+
+export default CacheingUserSearchForm;
