@@ -76,7 +76,7 @@ const UnlocksTableRow = React.memo(
       unlockId,
       unlockProgress: progress,
       killsNeeded,
-      serviceStar,
+      battlePack,
     },
     isFavorited,
     isMarkedDone,
@@ -98,7 +98,7 @@ const UnlocksTableRow = React.memo(
             <b>{killsNeeded}</b> ({progress.actualValue}/{progress.valueNeeded})
           </td>
           <td>
-            {serviceStar && `Service star ${serviceStar}`}
+            {battlePack && `Battlepack ${battlePack}`}
             {image && <WeaponAccessory imageSlug={image} />}
             <WordBreaked text={attachmentName} />
           </td>

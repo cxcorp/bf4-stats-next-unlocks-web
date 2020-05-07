@@ -33,7 +33,7 @@ export const getNextUnlocks = (weaponStats) => {
         image: WeaponAccessory.image(accessory),
         unlockProgress: unlockProgress,
         killsNeeded: unlockProgress.valueNeeded - unlockProgress.actualValue,
-        serviceStar: WeaponAccessory.serviceStar(accessory),
+        battlePack: WeaponAccessory.battlePack(accessory),
       };
     })
     .filter((obj) => !!obj.weapon)
