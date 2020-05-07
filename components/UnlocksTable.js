@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import { Col, Table, Button, Form } from "react-bootstrap";
+import css from "styled-jsx/css";
 
 import { usePersistedState } from "~/util/hooks";
 import { maxBy, toLookup, setValuesTo } from "~/util";
@@ -233,6 +234,16 @@ const SortableTh = ({
   );
 };
 
+const unlocksTableStyle = css.resolve`
+  table {
+    font-size: 0.9rem;
+  }
+
+  .favorites {
+    border-bottom: 5px solid #fff;
+  }
+`;
+
 const UnlocksTable = ({
   unlocks,
   favoriteUnlocks,
@@ -258,7 +269,12 @@ const UnlocksTable = ({
 
   return (
     <>
-      <Table striped bordered responsive>
+      <Table
+        className={unlocksTableStyle.className}
+        striped
+        bordered
+        responsive
+      >
         <thead>
           <tr>
             <SortableTh {...getSortableProps(Sorters.KillsNeeded)}>
@@ -278,11 +294,7 @@ const UnlocksTable = ({
         <tbody className="favorites">{favoriteUnlocks.map(makeRow)}</tbody>
         <tbody>{unlocks.map(makeRow)}</tbody>
       </Table>
-      <style jsx>{`
-        .favorites {
-          border-bottom: 5px solid #fff;
-        }
-      `}</style>
+      {unlocksTableStyle.styles}
     </>
   );
 };
