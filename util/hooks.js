@@ -18,7 +18,7 @@ const tryCatch = (cb) => {
 };
 
 export const usePersistedState = (defaultValue, localStorageKey) => {
-  const state = useState(defaultValue);
+  const [state, setState] = useState(defaultValue);
   // initial state reader, can't just put into defaultValue or SSR state won't match client-side
   useEffect(() => {
     tryCatch(() => {
@@ -26,12 +26,12 @@ export const usePersistedState = (defaultValue, localStorageKey) => {
       if (item === null) {
         return;
       }
-      state[1](JSON.parse(item));
+      setState(JSON.parse(item));
     });
-  }, []);
+  }, [setState, localStorageKey]);
   // localstorage updater
   useEffect(() => {
-    const newVal = state[0];
+    const newVal = state;
     const timeoutToken = setTimeout(() => {
       tryCatch(() => {
         localStorage.setItem(localStorageKey, JSON.stringify(newVal));
@@ -39,6 +39,14 @@ export const usePersistedState = (defaultValue, localStorageKey) => {
     }, 300);
 
     return () => clearTimeout(timeoutToken);
-  }, [state[0]]);
-  return state;
+  }, [state, localStorageKey]);
+
+  const clearPersistedState = useCallback(() => {
+    setState(defaultValue);
+    tryCatch(() => {
+      localStorage.removeItem(localStorageKey);
+    });
+  }, [setState, defaultValue, localStorageKey]);
+
+  return [state, setState, clearPersistedState];
 };
