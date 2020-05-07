@@ -146,6 +146,73 @@ const UnlocksTableRow = React.memo(
   }
 );
 
+const UnlocksTableFilters = React.memo(
+  ({
+    minCurrentKills,
+    minCurrentKillsMax,
+    onMinCurrentKillsChange,
+    selectedWeaponCategories,
+    onSelectedWeaponCategoriesChange,
+    onSelectAllWeaponCategories,
+    onDeselectAllWeaponCategories,
+  }) => {
+    const weaponTypes = useMemo(() => Object.values(weaponCategories).sort(), [
+      weaponCategories,
+    ]);
+
+    return (
+      <>
+        <Form.Group controlId="123">
+          <Form.Label>
+            Only show unlocks with current kills ≥ <b>{minCurrentKills}</b>
+          </Form.Label>
+          <Form.Control
+            type="range"
+            value={minCurrentKills}
+            min={0}
+            max={minCurrentKillsMax}
+            onChange={onMinCurrentKillsChange}
+          />
+        </Form.Group>
+
+        <hr />
+
+        <Form.Group controlId="321">
+          <Form.Label>Filter groups</Form.Label>
+          {weaponTypes.map((category) => (
+            <Form.Check
+              key={category}
+              checked={!!selectedWeaponCategories[category]}
+              onChange={onSelectedWeaponCategoriesChange}
+              type="checkbox"
+              id={`weapon-cat-${category}`}
+              name={category}
+              label={category}
+            />
+          ))}
+        </Form.Group>
+
+        <Form.Group>
+          <Button
+            size="sm"
+            variant="outline-secondary"
+            onClick={onSelectAllWeaponCategories}
+          >
+            Show all
+          </Button>
+          <Button
+            size="sm"
+            variant="outline-secondary"
+            onClick={onDeselectAllWeaponCategories}
+          >
+            Hide all
+          </Button>
+        </Form.Group>
+      </>
+    );
+  }
+);
+
 const Sorters = {
   KillsNeeded: "KillsNeeded",
   Category: "Category",
@@ -165,74 +232,69 @@ const SortDir = {
   DESC: -1,
 };
 
-const SortableTh = ({
-  activeId,
-  direction,
-  sorterId,
-  onSort,
-  children,
-  ...props
-}) => {
-  const handleClick = useCallback(
-    (e) => {
-      onSort(sorterId);
-    },
-    [onSort, sorterId]
-  );
+const SortableTh = React.memo(
+  ({ activeId, direction, sorterId, onSort, children, ...props }) => {
+    const handleClick = useCallback(
+      (e) => {
+        onSort(sorterId);
+      },
+      [onSort, sorterId]
+    );
 
-  const active = activeId === sorterId;
-  return (
-    <>
-      <th
-        className={`sortable ${!active ? "sortable--inactive" : ""}`}
-        onClick={handleClick}
-        {...props}
-      >
-        <div className="wrapper">
-          <div className="label">{children}</div>
-          <div className="icon">
-            {active ? (
-              direction === SortDir.ASC ? (
-                <ChevronUp />
+    const active = activeId === sorterId;
+    return (
+      <>
+        <th
+          className={`sortable ${!active ? "sortable--inactive" : ""}`}
+          onClick={handleClick}
+          {...props}
+        >
+          <div className="wrapper">
+            <div className="label">{children}</div>
+            <div className="icon">
+              {active ? (
+                direction === SortDir.ASC ? (
+                  <ChevronUp />
+                ) : (
+                  <ChevronDown />
+                )
               ) : (
                 <ChevronDown />
-              )
-            ) : (
-              <ChevronDown />
-            )}
+              )}
+            </div>
           </div>
-        </div>
-      </th>
-      <style jsx>{`
-        th {
-          cursor: pointer;
-          user-select: none;
-        }
+        </th>
+        <style jsx>{`
+          th {
+            cursor: pointer;
+            user-select: none;
+          }
 
-        .wrapper {
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          justify-content: center;
-        }
+          .wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+          }
 
-        .icon {
-          margin-left: auto;
-        }
+          .icon {
+            margin-left: auto;
+          }
 
-        .sortable--inactive .icon {
-          opacity: 0.3;
+          .sortable--inactive .icon {
+            opacity: 0.3;
 
-          transition: opacity 150ms cubic-bezier(0, 0, 0.2, 1);
-        }
+            transition: opacity 150ms cubic-bezier(0, 0, 0.2, 1);
+          }
 
-        .sortable--inactive:hover .icon {
-          opacity: 0.75;
-        }
-      `}</style>
-    </>
-  );
-};
+          .sortable--inactive:hover .icon {
+            opacity: 0.75;
+          }
+        `}</style>
+      </>
+    );
+  }
+);
 
 const unlocksTableStyle = css.resolve`
   table {
@@ -387,9 +449,9 @@ const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
     doneGuids,
   ]);
 
-  const largestCurrentKills = maxBy(
-    unlocks,
-    (unlock) => unlock.unlockProgress.actualValue
+  const largestCurrentKills = useMemo(
+    () => maxBy(unlocks, (unlock) => unlock.unlockProgress.actualValue),
+    [unlocks]
   );
 
   const favoriteUnlocks = useMemo(
@@ -417,59 +479,19 @@ const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
       <Col lg={3} className="order-lg-2">
         {sidebar}
         <hr />
-
-        <Form.Group controlId="123">
-          <Form.Label>
-            Only show unlocks with current kills ≥ <b>{minCurrentKills}</b>
-          </Form.Label>
-          <Form.Control
-            type="range"
-            value={minCurrentKills}
-            min={0}
-            max={
-              largestCurrentKills
-                ? largestCurrentKills.unlockProgress.actualValue
-                : 500
-            }
-            onChange={handleMinKillsChange}
-          />
-        </Form.Group>
-
-        <hr />
-
-        <Form.Group controlId="321">
-          <Form.Label>Filter groups</Form.Label>
-
-          {Object.values(weaponCategories)
-            .sort()
-            .map((category) => (
-              <Form.Check
-                key={category}
-                onChange={handleWeaponCategoryFilterChecked}
-                checked={!!selectedCategories[category]}
-                type="checkbox"
-                id={`weapon-cat-${category}`}
-                name={category}
-                label={category}
-              />
-            ))}
-        </Form.Group>
-        <Form.Group>
-          <Button
-            size="sm"
-            variant="outline-secondary"
-            onClick={handleCheckAllWeaponCategories}
-          >
-            Show all
-          </Button>
-          <Button
-            size="sm"
-            variant="outline-secondary"
-            onClick={handleUncheckAllWeaponCategories}
-          >
-            Hide all
-          </Button>
-        </Form.Group>
+        <UnlocksTableFilters
+          minCurrentKills={minCurrentKills}
+          minCurrentKillsMax={
+            largestCurrentKills
+              ? largestCurrentKills.unlockProgress.actualValue
+              : 500
+          }
+          onMinCurrentKillsChange={handleMinKillsChange}
+          selectedWeaponCategories={selectedCategories}
+          onSelectedWeaponCategoriesChange={handleWeaponCategoryFilterChecked}
+          onSelectAllWeaponCategories={handleCheckAllWeaponCategories}
+          onDeselectAllWeaponCategories={handleUncheckAllWeaponCategories}
+        />
       </Col>
       <Col lg={9} className="order-lg-1">
         <UnlocksTable
