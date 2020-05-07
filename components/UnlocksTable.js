@@ -224,7 +224,61 @@ const SortableTh = ({
   );
 };
 
-const UnlocksTable = ({ unlocks, children: sidebar }) => {
+const UnlocksTable = ({
+  unlocks,
+  favoriteUnlocks,
+  isWeaponFavorite,
+  isWeaponDone,
+  getSortableProps,
+  onFavoriteToggled,
+  onDoneToggled,
+}) => {
+  const makeRow = useCallback(
+    (unlock) => (
+      <UnlocksTableRow
+        key={`${unlock.unlockId}_${unlock.weapon.guid}`}
+        unlock={unlock}
+        isFavorited={isWeaponFavorite(unlock.weapon.guid)}
+        onFavoriteToggled={onFavoriteToggled}
+        isMarkedDone={isWeaponDone(unlock.weapon.guid)}
+        onDoneToggled={onDoneToggled}
+      />
+    ),
+    [isWeaponFavorite, onFavoriteToggled, isWeaponDone, onDoneToggled]
+  );
+
+  return (
+    <>
+      <Table striped bordered>
+        <thead>
+          <tr>
+            <SortableTh {...getSortableProps(Sorters.KillsNeeded)}>
+              Kills needed
+            </SortableTh>
+            <th>Unlock</th>
+            <th>Weapon</th>
+            <SortableTh {...getSortableProps(Sorters.Category)}>
+              Category
+            </SortableTh>
+            <SortableTh {...getSortableProps(Sorters.Completion)}>
+              Completion
+            </SortableTh>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody className="favorites">{favoriteUnlocks.map(makeRow)}</tbody>
+        <tbody>{unlocks.map(makeRow)}</tbody>
+      </Table>
+      <style jsx>{`
+        .favorites {
+          border-bottom: 5px solid #fff;
+        }
+      `}</style>
+    </>
+  );
+};
+
+const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
   const [sorter, setSorter] = usePersistedState(
     { id: Sorters.KillsNeeded, dir: SortDir.ASC },
     "UNLOCKS-SORTER"
@@ -289,12 +343,24 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
     }));
   }, []);
 
-  const sortableProps = (sorterId) => ({
-    activeId: sorter.id,
-    sorterId,
-    direction: sorter.dir,
-    onSort: handleSort,
-  });
+  const getSortableProps = useCallback(
+    (sorterId) => ({
+      activeId: sorter.id,
+      sorterId,
+      direction: sorter.dir,
+      onSort: handleSort,
+    }),
+    [sorter, handleSort]
+  );
+
+  const isWeaponFavorite = useCallback(
+    (weaponGuid) => !!favorites[weaponGuid],
+    [favorites]
+  );
+
+  const isWeaponDone = useCallback((weaponGuid) => !!doneGuids[weaponGuid], [
+    doneGuids,
+  ]);
 
   const largestCurrentKills = maxBy(
     unlocks,
@@ -376,60 +442,18 @@ const UnlocksTable = ({ unlocks, children: sidebar }) => {
         </Form.Group>
       </Col>
       <Col lg={9} className="order-lg-1">
-        <Table striped bordered>
-          <thead>
-            <tr>
-              <SortableTh {...sortableProps(Sorters.KillsNeeded)}>
-                Kills needed
-              </SortableTh>
-              <th>Unlock</th>
-              <th>Weapon</th>
-              <SortableTh {...sortableProps(Sorters.Category)}>
-                Category
-              </SortableTh>
-              <SortableTh {...sortableProps(Sorters.Completion)}>
-                Completion
-              </SortableTh>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody className="favorites">
-            {favoriteUnlocks.map((unlock) => (
-              <UnlocksTableRow
-                key={`${unlock.unlockId}_${unlock.weapon.guid}`}
-                unlock={unlock}
-                isFavorited={!!favorites[unlock.weapon.guid]}
-                onFavoriteToggled={handleFavoriteToggled}
-                isMarkedDone={!!doneGuids[unlock.weapon.guid]}
-                onDoneToggled={handleDoneToggled}
-              />
-            ))}
-          </tbody>
-          <tbody>
-            {filteredUnlocks.map((unlock) => (
-              <UnlocksTableRow
-                key={`${unlock.unlockId}_${unlock.weapon.guid}`}
-                unlock={unlock}
-                isFavorited={!!favorites[unlock.weapon.guid]}
-                onFavoriteToggled={handleFavoriteToggled}
-                isMarkedDone={!!doneGuids[unlock.weapon.guid]}
-                onDoneToggled={handleDoneToggled}
-              />
-            ))}
-          </tbody>
-        </Table>
+        <UnlocksTable
+          unlocks={filteredUnlocks}
+          favoriteUnlocks={favoriteUnlocks}
+          isWeaponFavorite={isWeaponFavorite}
+          isWeaponDone={isWeaponDone}
+          getSortableProps={getSortableProps}
+          onFavoriteToggled={handleFavoriteToggled}
+          onDoneToggled={handleDoneToggled}
+        />
       </Col>
-      <style jsx>{`
-        .sortable {
-          cursor: pointer;
-        }
-
-        .favorites {
-          border-bottom: 5px solid #fff;
-        }
-      `}</style>
     </>
   );
 };
 
-export default UnlocksTable;
+export default UnlocksTableContainer;
