@@ -1,0 +1,2 @@
+export const DARK_MODE_WINDOW_VAR = "__BF4_UNLOCKS_DARK_MODE";
+export const DARK_MODE_COOKIE_KEY = "DARK_MODE";

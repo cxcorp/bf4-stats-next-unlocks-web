@@ -6,6 +6,7 @@ import Router, { useRouter } from "next/router";
 import Link from "next/link";
 import { Container, Badge, Row, Col, Button } from "react-bootstrap";
 import formatDistance from "date-fns/formatDistance";
+import css from "styled-jsx/css";
 
 import { getNextUnlocks } from "~/data";
 import * as BattlelogCommon from "~/data/common";
@@ -13,6 +14,7 @@ import LoadingButton from "~/components/LoadingButton";
 import UserSearchForm from "~/components/UserSearchForm";
 import UnlocksTable from "~/components/UnlocksTable";
 import { GithubIcon } from "~/components/GithubIcon";
+import DarkModeSwitch from "~/components/DarkModeSwitch";
 
 const CurrentPersona = ({ className, platformInt, name }) => (
   <h2 className={className}>
@@ -22,6 +24,12 @@ const CurrentPersona = ({ className, platformInt, name }) => (
     {name}
   </h2>
 );
+
+const layoutControlsStyle = css.resolve`
+  .controls-container {
+    text-align: right;
+  }
+`;
 
 const Layout = ({
   title,
@@ -39,24 +47,33 @@ const Layout = ({
       <Container>
         <Row className="pt-3 pt-sm-5">
           <Col lg={9}>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <Link href="/">
-                <a>
-                  <h1>BF4 Next Attachment Unlocks</h1>
-                </a>
-              </Link>
-              <a
-                style={{ marginLeft: "auto" }}
-                rel="noopener"
-                href="https://github.com/cxcorp/bf4-stats-next-unlocks-web"
+            <Row>
+              <Col md="auto">
+                <Link href="/">
+                  <a>
+                    <h1>BF4 Next Attachment Unlocks</h1>
+                  </a>
+                </Link>
+              </Col>
+              <Col
+                md="auto"
+                className={`ml-auto controls-container ${layoutControlsStyle.className}`}
               >
-                <GithubIcon />
-                <img
-                  className="ml-2"
-                  src="https://img.shields.io/github/issues/cxcorp/bf4-stats-next-unlocks-web?style=social"
-                />
-              </a>
-            </div>
+                <div className="github-icon-container">
+                  <a
+                    rel="noopener"
+                    href="https://github.com/cxcorp/bf4-stats-next-unlocks-web"
+                  >
+                    <GithubIcon />
+                    <img
+                      className="ml-2"
+                      src="https://img.shields.io/github/issues/cxcorp/bf4-stats-next-unlocks-web?style=social"
+                    />
+                  </a>
+                </div>
+                <DarkModeSwitch className="ml-auto mt-2" />
+              </Col>
+            </Row>
             <UserSearchForm
               className="mt-5"
               isPageLoading={isPageLoading}
@@ -72,6 +89,14 @@ const Layout = ({
         </Row>
         {children}
       </Container>
+
+      <style jsx>{`
+        .github-icon-container {
+          display: flex;
+          align-items: center;
+        }
+      `}</style>
+      {layoutControlsStyle.styles}
     </>
   );
 };

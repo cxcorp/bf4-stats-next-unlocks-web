@@ -127,7 +127,9 @@ const selectOptionValue = (obj) => {
   const platformInt = BattlelogCommon.getPlatformIntFromSearchResult(obj);
   return `${obj.personaId}/${platformInt}`;
 };
-const selectStyles = { menu: (provided) => ({ ...provided, zIndex: 5 }) };
+const selectStyles = {
+  menu: (provided) => ({ ...provided, zIndex: 5, color: "#333" }),
+};
 const selectComponents = {
   Option: PlatformBadgeOption,
   MenuList: ClearSavedMenuList,
