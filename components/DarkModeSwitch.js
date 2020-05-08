@@ -1,13 +1,13 @@
 import { useEffect, useState, useCallback } from "react";
 import { Button } from "react-bootstrap";
 
-import { DARK_MODE_WINDOW_VAR, DARK_MODE_COOKIE_KEY } from "~/common";
+import { DARK_MODE_COOKIE_KEY } from "~/common";
 
 const DarkModeSwitch = ({ className }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    setIsDarkMode(!!window[DARK_MODE_WINDOW_VAR]);
+    setIsDarkMode(document.cookie.includes(`${DARK_MODE_COOKIE_KEY}=1`));
   }, []);
 
   const handleClicked = useCallback(

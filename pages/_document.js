@@ -20,11 +20,6 @@ class CustomDocument extends Document {
         <Head>
           <link rel="stylesheet" href="/css/toggle-bootstrap.min.css" />
           <link rel="stylesheet" href="/css/toggle-bootstrap-dark.min.css" />
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `window.${DARK_MODE_WINDOW_VAR}=${darkMode};`,
-            }}
-          />
         </Head>
         <body className={`bootstrap ${darkMode ? "bootstrap-dark" : ""}`}>
           <Main />

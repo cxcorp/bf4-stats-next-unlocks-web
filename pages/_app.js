@@ -7,7 +7,7 @@ const App = ({ Component, pageProps }) => {
   useEffect(() => {
     if (
       document.cookie.includes(`${DARK_MODE_COOKIE_KEY}=1`) &&
-      !window[DARK_MODE_WINDOW_VAR]
+      !document.body.classList.contains("bootstrap-dark")
     ) {
       document.body.classList.add("bootstrap-dark");
     }
