@@ -83,7 +83,4 @@ const Index = () => {
   );
 };
 
-// force request to actually go to the server so that dark mode is applied
-Index.getInitialProps = async () => ({});
-
 export default Index;
