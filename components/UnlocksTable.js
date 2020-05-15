@@ -29,7 +29,7 @@ const CompletionBar = React.memo(({ progress, total }) => {
             style={{ width: `${(progress / total) * 100}%`, background: color }}
           ></div>
         </div>
-        <span className="numbers">
+        <span className="numbers" title={`${total - progress} kills needed`}>
           {progress}/{total}
         </span>
       </div>
