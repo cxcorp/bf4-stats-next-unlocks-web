@@ -217,12 +217,17 @@ const Sorters = {
   KillsNeeded: "KillsNeeded",
   Category: "Category",
   Completion: "Completion",
+  CompletionAbs: "CompletionAbs",
 };
 const SorterFn = {
   [Sorters.KillsNeeded]: (a, b) => a.killsNeeded - b.killsNeeded,
   [Sorters.Completion]: (a, b) =>
     a.unlockProgress.actualValue / maxKills[a.weapon.guid] -
     b.unlockProgress.actualValue / maxKills[b.weapon.guid],
+  [Sorters.CompletionAbs]: (a, b) =>
+    a.unlockProgress.valueNeeded -
+    a.unlockProgress.actualValue -
+    (b.unlockProgress.valueNeeded - a.unlockProgress.actualValue),
   [Sorters.Category]: (a, b) =>
     a.weapon.category.localeCompare(b.weapon.category),
 };
@@ -346,7 +351,9 @@ const UnlocksTable = ({
             <SortableTh {...getSortableProps(Sorters.Completion)}>
               Completion
             </SortableTh>
-            <th></th>
+            <SortableTh
+              {...getSortableProps(Sorters.CompletionAbs)}
+            ></SortableTh>
           </tr>
         </thead>
         <tbody className="favorites">{favoriteUnlocks.map(makeRow)}</tbody>
