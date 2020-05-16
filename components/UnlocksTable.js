@@ -13,7 +13,7 @@ import WeaponAccessory from "./WeaponAccessory";
 
 const FAVORITES_STORAGE_KEY = "UNLOCKS-TABLE-FAVORITES";
 
-const CompletionBar = React.memo(({ progress, total }) => {
+const CompletionBar = React.memo(({ showMissing, progress, total }) => {
   const percentage = ((progress / total) * 100).toFixed(0);
 
   const hue = Math.floor(130 - (progress / total) * 130);
@@ -29,8 +29,8 @@ const CompletionBar = React.memo(({ progress, total }) => {
             style={{ width: `${(progress / total) * 100}%`, background: color }}
           ></div>
         </div>
-        <span className="numbers" title={`${total - progress} kills needed`}>
-          {progress}/{total}
+        <span className="numbers">
+          {showMissing ? `${total - progress} to go` : `${progress}/${total}`}
         </span>
       </div>
       <style jsx>{`
@@ -81,8 +81,10 @@ const UnlocksTableRow = React.memo(
     },
     isFavorited,
     isMarkedDone,
+    showDeltaFromCompletion,
     onFavoriteToggled,
     onDoneToggled,
+    onShowDeltaFromCompletionToggled,
   }) => {
     const handleFavoriteClicked = useCallback(() => {
       onFavoriteToggled(weapon.guid);
@@ -110,8 +112,12 @@ const UnlocksTableRow = React.memo(
             </span>
           </td>
           <td>{weapon.category}</td>
-          <td className="p-0 py-1">
+          <td
+            className="p-0 py-1 completion"
+            onClick={onShowDeltaFromCompletionToggled}
+          >
             <CompletionBar
+              showMissing={showDeltaFromCompletion}
               progress={progress.actualValue}
               total={maxKills[weapon.guid]}
             />
@@ -139,6 +145,10 @@ const UnlocksTableRow = React.memo(
             float: right;
             cursor: pointer;
             color: #999;
+          }
+
+          .completion {
+            cursor: pointer;
           }
         `}</style>
       </>
@@ -316,6 +326,11 @@ const UnlocksTable = ({
   onFavoriteToggled,
   onDoneToggled,
 }) => {
+  const [showDeltaCompletion, setShowDeltaCompletion] = useState(false);
+  const handleToggleDeltaCompletion = useCallback(() => {
+    setShowDeltaCompletion((show) => !show);
+  }, []);
+
   const makeRow = useCallback(
     (unlock) => (
       <UnlocksTableRow
@@ -325,9 +340,18 @@ const UnlocksTable = ({
         onFavoriteToggled={onFavoriteToggled}
         isMarkedDone={isWeaponDone(unlock.weapon.guid)}
         onDoneToggled={onDoneToggled}
+        showDeltaFromCompletion={showDeltaCompletion}
+        onShowDeltaFromCompletionToggled={handleToggleDeltaCompletion}
       />
     ),
-    [isWeaponFavorite, onFavoriteToggled, isWeaponDone, onDoneToggled]
+    [
+      isWeaponFavorite,
+      onFavoriteToggled,
+      isWeaponDone,
+      onDoneToggled,
+      showDeltaCompletion,
+      handleToggleDeltaCompletion,
+    ]
   );
 
   return (
