@@ -247,6 +247,11 @@ const SortDir = {
   DESC: -1,
 };
 
+// Completion column is used to see the *most* completed% weapon
+// so it makes sense for the default sort to show the most completed first
+const defaultSortDir = (sorter) =>
+  sorter === Sorters.Completion ? SortDir.DESC : SortDir.ASC;
+
 const SortableTh = React.memo(
   ({ activeId, direction, sorterId, onSort, children, ...props }) => {
     const handleClick = useCallback(
@@ -455,9 +460,11 @@ const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
     setSorter((currentSorter) => ({
       id: newSorter,
       // if clicked on active sorter, just reverse the direction
-      // other wise default to ASC
+      // otherwise default
       dir:
-        currentSorter.id === newSorter ? currentSorter.dir * -1 : SortDir.ASC,
+        currentSorter.id === newSorter
+          ? currentSorter.dir * -1
+          : defaultSortDir(newSorter),
     }));
   }, []);
 
