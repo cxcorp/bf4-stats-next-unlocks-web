@@ -325,17 +325,14 @@ const unlocksTableStyle = css.resolve`
 const UnlocksTable = ({
   unlocks,
   favoriteUnlocks,
+  getSortableProps,
   isWeaponFavorite,
   isWeaponDone,
-  getSortableProps,
+  showDeltaCompletion,
   onFavoriteToggled,
   onDoneToggled,
+  onDeltaCompletionToggled,
 }) => {
-  const [showDeltaCompletion, setShowDeltaCompletion] = useState(false);
-  const handleToggleDeltaCompletion = useCallback(() => {
-    setShowDeltaCompletion((show) => !show);
-  }, []);
-
   const makeRow = useCallback(
     (unlock) => (
       <UnlocksTableRow
@@ -346,7 +343,7 @@ const UnlocksTable = ({
         isMarkedDone={isWeaponDone(unlock.weapon.guid)}
         onDoneToggled={onDoneToggled}
         showDeltaFromCompletion={showDeltaCompletion}
-        onShowDeltaFromCompletionToggled={handleToggleDeltaCompletion}
+        onShowDeltaFromCompletionToggled={onDeltaCompletionToggled}
       />
     ),
     [
@@ -355,7 +352,7 @@ const UnlocksTable = ({
       isWeaponDone,
       onDoneToggled,
       showDeltaCompletion,
-      handleToggleDeltaCompletion,
+      onDeltaCompletionToggled,
     ]
   );
 
@@ -420,6 +417,10 @@ const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
     toLookup(Object.values(weaponCategories), (_) => _),
     "UNLOCKS-FILTER-WEAPON-CATEGORY"
   );
+  const [showDeltaCompletion, setShowDeltaCompletion] = usePersistedState(
+    false,
+    "UNLOCKS-SHOW-DELTA-COMPLETION"
+  );
   const [doneGuids, setDoneGuids] = useState({});
 
   const handleMinKillsChange = useCallback((e) => {
@@ -454,6 +455,10 @@ const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
       ...favorites,
       [weaponGuid]: !favorites[weaponGuid],
     }));
+  }, []);
+
+  const handleToggleDeltaCompletion = useCallback(() => {
+    setShowDeltaCompletion((show) => !show);
   }, []);
 
   const handleSort = useCallback((newSorter) => {
@@ -535,11 +540,13 @@ const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
         <UnlocksTable
           unlocks={filteredUnlocks}
           favoriteUnlocks={favoriteUnlocks}
+          getSortableProps={getSortableProps}
           isWeaponFavorite={isWeaponFavorite}
           isWeaponDone={isWeaponDone}
-          getSortableProps={getSortableProps}
+          showDeltaCompletion={showDeltaCompletion}
           onFavoriteToggled={handleFavoriteToggled}
           onDoneToggled={handleDoneToggled}
+          onDeltaCompletionToggled={handleToggleDeltaCompletion}
         />
       </Col>
     </>
