@@ -43,7 +43,7 @@ const CompletionBar = React.memo(({ showMissing, progress, total }) => {
 
         .bar-container {
           position: relative;
-          height: 5px;
+          height: 3px;
           background: #f1e4d0;
           width: 100%;
         }
