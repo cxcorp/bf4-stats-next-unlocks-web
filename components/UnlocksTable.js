@@ -225,9 +225,9 @@ const SorterFn = {
     a.unlockProgress.actualValue / maxKills[a.weapon.guid] -
     b.unlockProgress.actualValue / maxKills[b.weapon.guid],
   [Sorters.CompletionAbs]: (a, b) =>
-    a.unlockProgress.valueNeeded -
+    maxKills[a.weapon.guid] -
     a.unlockProgress.actualValue -
-    (b.unlockProgress.valueNeeded - a.unlockProgress.actualValue),
+    (maxKills[b.weapon.guid] - b.unlockProgress.actualValue),
   [Sorters.Category]: (a, b) =>
     a.weapon.category.localeCompare(b.weapon.category),
 };
