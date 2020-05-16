@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import { Col, Table, Button, Form } from "react-bootstrap";
 import css from "styled-jsx/css";
 
@@ -163,12 +163,34 @@ const UnlocksTableFilters = React.memo(
     onMinCurrentKillsChange,
     selectedWeaponCategories,
     onSelectedWeaponCategoriesChange,
+    onSelectedWeaponCategoryCtrlClick,
     onSelectAllWeaponCategories,
     onDeselectAllWeaponCategories,
   }) => {
     const weaponTypes = useMemo(() => Object.values(weaponCategories).sort(), [
       weaponCategories,
     ]);
+    const isCtrlKey_CtrlKeyHack = useRef(false)
+    const handleWeaponCategoryFilterChange = useCallback(
+      (e) => {
+        if (isCtrlKey_CtrlKeyHack.current) {
+          isCtrlKey_CtrlKeyHack.current = false;
+          return;
+        }
+        onSelectedWeaponCategoriesChange(e.currentTarget.name);
+      },
+      [onSelectedWeaponCategoriesChange]
+    );
+    const handleWeaponCategoryMouseDown = useCallback(
+      (e) => {
+        if (e.ctrlKey) {
+          const name = e.currentTarget.name;
+          isCtrlKey_CtrlKeyHack.current = true
+          onSelectedWeaponCategoryCtrlClick(name);
+        }
+      },
+      [onSelectedWeaponCategoryCtrlClick]
+    );
 
     return (
       <>
@@ -188,12 +210,13 @@ const UnlocksTableFilters = React.memo(
         <hr />
 
         <Form.Group controlId="321">
-          <Form.Label>Filter groups</Form.Label>
+          <Form.Label>Shown weapon categories</Form.Label>
           {weaponTypes.map((category) => (
             <Form.Check
               key={category}
               checked={!!selectedWeaponCategories[category]}
-              onChange={onSelectedWeaponCategoriesChange}
+              onMouseDown={handleWeaponCategoryMouseDown}
+              onChange={handleWeaponCategoryFilterChange}
               type="checkbox"
               id={`weapon-cat-${category}`}
               name={category}
@@ -432,11 +455,17 @@ const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
     setDoneGuids((guids) => ({ ...guids, [weaponGuid]: !guids[weaponGuid] }));
   }, []);
 
-  const handleWeaponCategoryFilterChecked = useCallback((e) => {
-    const checkedName = e.currentTarget.name;
+  const handleWeaponCategoryFilterChecked = useCallback((checkedName) => {
     setSelectedCategories((categories) => ({
       ...categories,
       [checkedName]: !categories[checkedName],
+    }));
+  }, []);
+
+  const handleSelectedWeaponCategoryCtrlClick = useCallback((checkedName) => {
+    setSelectedCategories((categories) => ({
+      ...toLookup(Object.values(weaponCategories), (_) => _, false),
+      [checkedName]: true,
     }));
   }, []);
 
@@ -532,6 +561,9 @@ const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
           onMinCurrentKillsChange={handleMinKillsChange}
           selectedWeaponCategories={selectedCategories}
           onSelectedWeaponCategoriesChange={handleWeaponCategoryFilterChecked}
+          onSelectedWeaponCategoryCtrlClick={
+            handleSelectedWeaponCategoryCtrlClick
+          }
           onSelectAllWeaponCategories={handleCheckAllWeaponCategories}
           onDeselectAllWeaponCategories={handleUncheckAllWeaponCategories}
         />

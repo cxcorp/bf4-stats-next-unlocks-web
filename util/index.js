@@ -2,9 +2,9 @@ export const maxBy = (arr, fn) => {
   return arr.reduce((a, b) => (fn(a) > fn(b) ? a : b), arr[0]);
 };
 
-export const toLookup = (arr, by) =>
+export const toLookup = (arr, by, value = true) =>
   arr.reduce((acc, val) => {
-    acc[by(val)] = true;
+    acc[by(val)] = value;
     return acc;
   }, {});
 
