@@ -8,8 +8,8 @@ import { Container, Badge, Row, Col, Button } from "react-bootstrap";
 import formatDistance from "date-fns/formatDistance";
 import css from "styled-jsx/css";
 
-import { getNextUnlocks } from "~/data";
-import * as BattlelogCommon from "~/data/common";
+import { getNextUnlocks } from "~/domain";
+import * as BattlelogCommon from "~/domain/common";
 import LoadingButton from "~/components/LoadingButton";
 import UserSearchForm from "~/components/UserSearchForm";
 import UnlocksTable from "~/components/UnlocksTable";

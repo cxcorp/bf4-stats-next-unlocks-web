@@ -4,8 +4,8 @@ import css from "styled-jsx/css";
 
 import { usePersistedState } from "~/util/hooks";
 import { maxBy, toLookup, setValuesTo } from "~/util";
-import { weaponCategories } from "~/data/weaponCategories";
-import { maxKills } from "~/data/weaponMaxKills";
+import { weaponCategories } from "~/domain/weaponCategories";
+import { maxKills } from "~/domain/weaponMaxKills";
 import { WordBreaked } from "~/util/components";
 import { Heart, HeartOutline } from "~/components/HeartIcon";
 import { ChevronUp, ChevronDown } from "~/components/ChevronIcon";

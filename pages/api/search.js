@@ -1,7 +1,7 @@
 import axios from "axios";
 import querystring from "querystring";
 
-import { BF4_GAME_ID } from "~/data/common";
+import { BF4_GAME_ID } from "~/domain/common";
 
 const isBf4Persona = (persona) =>
   Object.values(persona.games).some(

@@ -3,7 +3,7 @@ import AsyncSelect from "react-select/async";
 import { components } from "react-select";
 import { Form, Badge } from "react-bootstrap";
 
-import * as BattlelogCommon from "~/data/common";
+import * as BattlelogCommon from "~/domain/common";
 import { usePersistedState } from "~/util/hooks";
 
 const ClearSavedContext = React.createContext(null);
