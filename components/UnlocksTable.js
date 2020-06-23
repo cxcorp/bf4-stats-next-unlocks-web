@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { Col, Table, Button, Form } from "react-bootstrap";
 import css from "styled-jsx/css";
 
@@ -346,6 +346,7 @@ const unlocksTableStyle = css.resolve`
 `;
 
 const UnlocksTable = ({
+  totalUnlocks,
   unlocks,
   favoriteUnlocks,
   getSortableProps,
@@ -388,6 +389,9 @@ const UnlocksTable = ({
         responsive
       >
         <thead>
+          <tr>
+            <th colspan="6">Weapons until complete: {totalUnlocks}</th>
+          </tr>
           <tr>
             <SortableTh {...getSortableProps(Sorters.KillsNeeded)}>
               Kills needed
@@ -570,6 +574,11 @@ const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
       </Col>
       <Col lg={9} className="order-lg-1">
         <UnlocksTable
+          totalUnlocks={
+            unlocks.filter(
+              (u) => u.unlockProgress.actualValue >= minCurrentKills
+            ).length
+          }
           unlocks={filteredUnlocks}
           favoriteUnlocks={favoriteUnlocks}
           getSortableProps={getSortableProps}
