@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import { Col, Table, Button, Form } from "react-bootstrap";
 import css from "styled-jsx/css";
 
@@ -158,6 +158,7 @@ const UnlocksTableRow = React.memo(
 
 const UnlocksTableFilters = React.memo(
   ({
+    matchingWeaponCount,
     minCurrentKills,
     minCurrentKillsMax,
     onMinCurrentKillsChange,
@@ -170,7 +171,7 @@ const UnlocksTableFilters = React.memo(
     const weaponTypes = useMemo(() => Object.values(weaponCategories).sort(), [
       weaponCategories,
     ]);
-    const isCtrlKey_CtrlKeyHack = useRef(false)
+    const isCtrlKey_CtrlKeyHack = useRef(false);
     const handleWeaponCategoryFilterChange = useCallback(
       (e) => {
         if (isCtrlKey_CtrlKeyHack.current) {
@@ -185,7 +186,7 @@ const UnlocksTableFilters = React.memo(
       (e) => {
         if (e.ctrlKey) {
           const name = e.currentTarget.name;
-          isCtrlKey_CtrlKeyHack.current = true
+          isCtrlKey_CtrlKeyHack.current = true;
           onSelectedWeaponCategoryCtrlClick(name);
         }
       },
@@ -241,6 +242,18 @@ const UnlocksTableFilters = React.memo(
             Hide all
           </Button>
         </Form.Group>
+
+        <hr />
+        <p
+          style={{
+            opacity: "0.8",
+            textTransform: "uppercase",
+            fontSize: "0.75em",
+          }}
+        >
+          Matching weapons:{" "}
+          <span style={{ paddingLeft: "0.5em" }}>{matchingWeaponCount}</span>
+        </p>
       </>
     );
   }
@@ -346,7 +359,6 @@ const unlocksTableStyle = css.resolve`
 `;
 
 const UnlocksTable = ({
-  totalUnlocks,
   unlocks,
   favoriteUnlocks,
   getSortableProps,
@@ -389,9 +401,6 @@ const UnlocksTable = ({
         responsive
       >
         <thead>
-          <tr>
-            <th colspan="6">Weapons until complete: {totalUnlocks}</th>
-          </tr>
           <tr>
             <SortableTh {...getSortableProps(Sorters.KillsNeeded)}>
               Kills needed
@@ -539,7 +548,6 @@ const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
       unlocks
         .filter(
           (u) =>
-            // don't show favorites twice
             !favorites[u.weapon.guid] &&
             // current kills filter
             u.unlockProgress.actualValue >= minCurrentKills &&
@@ -549,6 +557,12 @@ const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
         .sort(unlocksSorter),
     [unlocks, favorites, minCurrentKills, selectedCategories, unlocksSorter]
   );
+  const filteredUnlocksWithoutFavorites = useMemo(
+    () =>
+      // don't show favorites twice
+      filteredUnlocks.filter((u) => !favorites[u.weapon.guid]),
+    [filteredUnlocks, favorites]
+  );
 
   return (
     <>
@@ -556,6 +570,7 @@ const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
         {sidebar}
         <hr />
         <UnlocksTableFilters
+          matchingWeaponCount={filteredUnlocks.length}
           minCurrentKills={minCurrentKills}
           minCurrentKillsMax={
             largestCurrentKills
@@ -574,12 +589,7 @@ const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
       </Col>
       <Col lg={9} className="order-lg-1">
         <UnlocksTable
-          totalUnlocks={
-            unlocks.filter(
-              (u) => u.unlockProgress.actualValue >= minCurrentKills
-            ).length
-          }
-          unlocks={filteredUnlocks}
+          unlocks={filteredUnlocksWithoutFavorites}
           favoriteUnlocks={favoriteUnlocks}
           getSortableProps={getSortableProps}
           isWeaponFavorite={isWeaponFavorite}
