@@ -548,7 +548,6 @@ const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
       unlocks
         .filter(
           (u) =>
-            !favorites[u.weapon.guid] &&
             // current kills filter
             u.unlockProgress.actualValue >= minCurrentKills &&
             // weapon category filter
