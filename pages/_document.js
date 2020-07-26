@@ -24,6 +24,11 @@ class CustomDocument extends Document {
         <body className={`bootstrap ${darkMode ? "bootstrap-dark" : ""}`}>
           <Main />
           <NextScript />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `fetch('/api/ping').then(() => {}).catch(() => {});`,
+            }}
+          />
         </body>
       </Html>
     );
