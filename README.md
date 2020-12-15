@@ -2,7 +2,7 @@
 
 A web application that shows your next Battlefield 4 weapon attachment unlocks.
 
-**Try out the tool here:** https://bf4-next-unlocks.heikkila.dev
+**Try out the tool here:** https://bf4unlocks.com
 
 ## Why?
 
