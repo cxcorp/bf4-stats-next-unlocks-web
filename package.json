@@ -14,7 +14,7 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "@forevolve/bootstrap-dark": "^1.0.0-alpha.981",
+    "@forevolve/bootstrap-dark": "^1.0.0-alpha.1091",
     "axios": "^0.21.1",
     "date-fns": "^2.12.0",
     "next": "^10.0.7",
