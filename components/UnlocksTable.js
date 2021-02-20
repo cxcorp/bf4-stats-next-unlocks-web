@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useRef } from "react";
-import { Col, Table, Button, Form } from "react-bootstrap";
+import { Col, Table, Button, Form, Badge } from "react-bootstrap";
 import css from "styled-jsx/css";
 
 import { usePersistedState } from "~/util/hooks";
@@ -158,6 +158,7 @@ const UnlocksTableRow = React.memo(
 
 const UnlocksTableFilters = React.memo(
   ({
+    finishedCategories,
     matchingWeaponCount,
     minCurrentKills,
     minCurrentKillsMax,
@@ -221,7 +222,18 @@ const UnlocksTableFilters = React.memo(
               type="checkbox"
               id={`weapon-cat-${category}`}
               name={category}
-              label={category}
+              label={
+                finishedCategories.has(category) ? (
+                  <span style={{ opacity: 0.5 }}>
+                    {category}
+                    <Badge className="ml-2" variant="success">
+                      100%
+                    </Badge>
+                  </span>
+                ) : (
+                  category
+                )
+              }
             />
           ))}
         </Form.Group>
@@ -534,6 +546,17 @@ const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
     doneGuids,
   ]);
 
+  const finishedWeaponCategories = useMemo(
+    () =>
+      new Set(
+        Object.values(weaponCategories).filter(
+          (category) =>
+            !unlocks.some((unlock) => unlock.weapon.category === category)
+        )
+      ),
+    [unlocks]
+  );
+
   const largestCurrentKills = useMemo(
     () => maxBy(unlocks, (unlock) => unlock.unlockProgress.actualValue),
     [unlocks]
@@ -569,6 +592,7 @@ const UnlocksTableContainer = ({ unlocks, children: sidebar }) => {
         {sidebar}
         <hr />
         <UnlocksTableFilters
+          finishedCategories={finishedWeaponCategories}
           matchingWeaponCount={filteredUnlocks.length}
           minCurrentKills={minCurrentKills}
           minCurrentKillsMax={
