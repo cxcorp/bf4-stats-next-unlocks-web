@@ -15,15 +15,16 @@
   "private": true,
   "dependencies": {
     "@forevolve/bootstrap-dark": "^1.0.0-alpha.981",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "date-fns": "^2.12.0",
-    "next": "^9.3.6",
+    "next": "^10.0.7",
     "pg": "^8.3.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-bootstrap": "^1.0.1",
     "react-dom": "^16.13.1",
-    "react-select": "^3.1.0"
+    "react-select": "^3.1.0",
+    "webpack": "^4.46.0"
   },
   "devDependencies": {
     "@vercel/node": "^1.7.3",
