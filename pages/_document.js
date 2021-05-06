@@ -33,11 +33,12 @@ class CustomDocument extends Document {
             async
             defer
             data-collect-dnt="true"
+            data-ignore-pages="/unlocks/@profilename/*"
             src="https://api.bf4unlocks.com/latest.js"
           ></script>
           <noscript>
             <img
-              src="https://api.bf4unlocks.com/noscript.gif?collect-dnt=true"
+              src="https://api.bf4unlocks.com/noscript.gif?collect-dnt=true&ignore-pages=%2Funlocks%2F%40profilename%2F*"
               alt=""
               referrerpolicy="no-referrer-when-downgrade"
             />
