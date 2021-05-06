@@ -32,11 +32,12 @@ class CustomDocument extends Document {
           <script
             async
             defer
+            data-collect-dnt="true"
             src="https://api.bf4unlocks.com/latest.js"
           ></script>
           <noscript>
             <img
-              src="https://api.bf4unlocks.com/noscript.gif"
+              src="https://api.bf4unlocks.com/noscript.gif?collect-dnt=true"
               alt=""
               referrerpolicy="no-referrer-when-downgrade"
             />
