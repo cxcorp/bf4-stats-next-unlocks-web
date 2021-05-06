@@ -29,6 +29,18 @@ class CustomDocument extends Document {
               __html: `fetch('/api/ping').then(() => {}).catch(() => {});`,
             }}
           />
+          <script
+            async
+            defer
+            src="https://api.bf4unlocks.com/latest.js"
+          ></script>
+          <noscript>
+            <img
+              src="https://api.bf4unlocks.com/noscript.gif"
+              alt=""
+              referrerpolicy="no-referrer-when-downgrade"
+            />
+          </noscript>
         </body>
       </Html>
     );
