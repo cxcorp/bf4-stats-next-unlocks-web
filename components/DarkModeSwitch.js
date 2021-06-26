@@ -14,7 +14,7 @@ const DarkModeSwitch = ({ className }) => {
     (e) => {
       // toggle value in cookie and reload page
       const cookieEntry = `${DARK_MODE_COOKIE_KEY}=${isDarkMode ? 0 : 1}`;
-      const timestamp = new Date(new Date().getTime() + 30 * 86400 * 1000);
+      const timestamp = new Date(new Date().getTime() + 10 * 365 * 86400 * 1000);
 
       document.cookie = `${cookieEntry}; expires=${timestamp.toGMTString()}; path=/`;
       window.location.reload(true);
