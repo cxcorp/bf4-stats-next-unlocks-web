@@ -1,11 +1,15 @@
+import { useAppContext } from "~/components/AppContext";
+
 const WeaponAccessory = ({ imageSlug }) => {
+  const { isDarkMode } = useAppContext();
+
   return (
     <>
       <div className={["weapon-accessory", imageSlug].join(" ")}></div>
       <style jsx>{`
         .weapon-accessory {
           display: inline-block;
-          filter: invert(1);
+          filter: invert(${isDarkMode ? "0" : "1"});
           background-image: url(https://cdn.battlelog.com/bl-cdn/cdnprefix/1715536/public/profile/warsaw/gamedata/weaponaccessory/small.png);
           width: 64px;
           height: 16px;
