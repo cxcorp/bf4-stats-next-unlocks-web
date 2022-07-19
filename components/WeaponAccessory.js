@@ -6,7 +6,7 @@ const WeaponAccessory = ({ imageSlug }) => {
         .weapon-accessory {
           display: inline-block;
           filter: invert(1);
-          background-image: url(https://eaassets-a.akamaihd.net/bl-cdn/cdnprefix/production-284-20170531/public/profile/warsaw/gamedata/weaponaccessory/small.png);
+          background-image: url(https://cdn.battlelog.com/bl-cdn/cdnprefix/1715536/public/profile/warsaw/gamedata/weaponaccessory/small.png);
           width: 64px;
           height: 16px;
           background-size: 576px 144px;
@@ -15,7 +15,7 @@ const WeaponAccessory = ({ imageSlug }) => {
         @media only screen and (-webkit-min-device-pixel-ratio: 2),
           only screen and (min-device-pixel-ratio: 2) {
           .weapon-accessory {
-            background-image: url(https://eaassets-a.akamaihd.net/bl-cdn/cdnprefix/production-284-20170531/public/profile/warsaw/gamedata/weaponaccessory/small@2x.png);
+            background-image: url(https://cdn.battlelog.com/bl-cdn/cdnprefix/1715536/public/profile/warsaw/gamedata/weaponaccessory/small@2x.png);
           }
         }
         .weapon-accessory.ACOG_lineart {
