@@ -25,11 +25,6 @@ class CustomDocument extends Document {
           <Main />
           <NextScript />
           <script
-            dangerouslySetInnerHTML={{
-              __html: `fetch('/api/ping').then(() => {}).catch(() => {});`,
-            }}
-          />
-          <script
             async
             defer
             data-collect-dnt="true"
