@@ -183,7 +183,7 @@ const UserSearchForm = ({
   );
 };
 
-const CacheingUserSearchForm = ({ onSelect, ...props }) => {
+const CachingUserSearchForm = ({ onSelect, ...props }) => {
   const [
     previousSelections,
     setPreviousSelections,
@@ -217,4 +217,4 @@ const CacheingUserSearchForm = ({ onSelect, ...props }) => {
   );
 };
 
-export default CacheingUserSearchForm;
+export default CachingUserSearchForm;
