@@ -1,5 +1,5 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
-import { DARK_MODE_WINDOW_VAR, DARK_MODE_COOKIE_KEY } from "~/common";
+import { DARK_MODE_COOKIE_KEY, DARK_MODE_CLASSNAME } from "~/common";
 
 class CustomDocument extends Document {
   static async getInitialProps(ctx) {
@@ -21,7 +21,7 @@ class CustomDocument extends Document {
           <link rel="stylesheet" href="/css/toggle-bootstrap.min.css" />
           <link rel="stylesheet" href="/css/toggle-bootstrap-dark.min.css" />
         </Head>
-        <body className={`bootstrap ${darkMode ? "bootstrap-dark" : ""}`}>
+        <body className={`bootstrap ${darkMode ? DARK_MODE_CLASSNAME : ""}`}>
           <Main />
           <NextScript />
           <script
