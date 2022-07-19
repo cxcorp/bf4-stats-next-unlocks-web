@@ -35,22 +35,18 @@ const updateBodyClass = (isDarkMode) => {
 
 export const useAppContextContainer = () => {
   const [isDarkMode, setDarkMode] = useState(false);
-  console.log({ isDarkMode });
 
   useEffect(() => {
-    setDarkMode(document.cookie.includes(`${DARK_MODE_COOKIE_KEY}=1`));
+    const value = document.cookie.includes(`${DARK_MODE_COOKIE_KEY}=1`);
+    setDarkMode(value);
+    updateBodyClass(value);
   }, []);
 
-  const handleSetDarkMode = useCallback(
-    (value) => {
-      setDarkMode(value);
-
-      updateDarkModeCookie(value);
-      updateBodyClass(value);
-      // window.location.reload(true);
-    },
-    [isDarkMode]
-  );
+  const handleSetDarkMode = useCallback((value) => {
+    setDarkMode(value);
+    updateDarkModeCookie(value);
+    updateBodyClass(value);
+  }, []);
 
   const value = useMemo(
     () => ({
