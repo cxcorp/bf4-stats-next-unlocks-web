@@ -17,6 +17,7 @@
     "@forevolve/bootstrap-dark": "^2.1.0",
     "axios": "^0.27.2",
     "date-fns": "^2.28.0",
+    "debounce-promise": "^3.1.2",
     "next": "^12.2.2",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",

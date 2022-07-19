@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useContext } from "react";
 import AsyncSelect from "react-select/async";
 import { components } from "react-select";
 import { Form, Badge } from "react-bootstrap";
+import debounce from "debounce-promise";
 
 import * as BattlelogCommon from "~/domain/common";
 import { usePersistedState } from "~/util/hooks";
@@ -122,6 +123,8 @@ const loadSearchResults = async (searchTerm) => {
   }
 };
 
+const debouncedLoadSearchResults = debounce(loadSearchResults, 350);
+
 const selectOptionLabel = (obj) => obj.personaName;
 const selectOptionValue = (obj) => {
   const platformInt = BattlelogCommon.getPlatformIntFromSearchResult(obj);
@@ -169,7 +172,7 @@ const UserSearchForm = ({
             instanceId={instanceId}
             defaultOptions={defaultOptions}
             cacheOptions
-            loadOptions={loadSearchResults}
+            loadOptions={debouncedLoadSearchResults}
             getOptionLabel={selectOptionLabel}
             getOptionValue={selectOptionValue}
             {...pageLoadingOpts}
