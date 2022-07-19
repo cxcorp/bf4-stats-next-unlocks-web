@@ -14,6 +14,7 @@ const WeaponAccessory = ({ imageSlug }) => {
           width: 64px;
           height: 16px;
           background-size: 576px 144px;
+          vertical-align: middle;
         }
 
         @media only screen and (-webkit-min-device-pixel-ratio: 2),
