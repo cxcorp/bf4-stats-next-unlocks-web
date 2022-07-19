@@ -198,7 +198,7 @@ const CacheingUserSearchForm = ({ onSelect, ...props }) => {
           return prev;
         }
 
-        return [...prev, selectedOption];
+        return [...prev.slice(0, 5), selectedOption];
       });
 
       onSelect(selectedOption);
