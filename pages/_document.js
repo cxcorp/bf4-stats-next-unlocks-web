@@ -40,7 +40,7 @@ class CustomDocument extends Document {
             <img
               src="https://api.bf4unlocks.com/noscript.gif?collect-dnt=true&ignore-pages=%2Funlocks%2F*%2C%2Funlocks%2F*%2F*%2C%2Funlocks%2F*%2F*%2F*"
               alt=""
-              referrerpolicy="no-referrer-when-downgrade"
+              referrerPolicy="no-referrer-when-downgrade"
             />
           </noscript>
         </body>
