@@ -113,25 +113,32 @@ Layout.propTypes = {
   children: PT.node,
 };
 
-const DataDate = ({ date }) => {
-  const [referenceDate, setReferenceDate] = useState(new Date());
+const DataDate = ({ dateString }) => {
+  const [referenceDate, setReferenceDate] = useState(null);
 
   useEffect(() => {
     setReferenceDate(new Date());
-  }, [date]);
+  }, [dateString]);
 
   useEffect(() => {
     const token = setInterval(() => setReferenceDate(new Date()), 20000);
     return () => clearInterval(token);
   }, []);
 
+  let date = new Date(dateString);
+  if (referenceDate && date.getTime() > referenceDate.getTime()) {
+    date = referenceDate;
+  }
+
   return (
-    <time dateTime={date.toISOString()} title={date.toISOString()}>
-      {formatDistance(date, referenceDate, {
-        includeSeconds: true,
-        addSuffix: true,
-      })}
-    </time>
+    referenceDate && (
+      <time dateTime={date.toISOString()} title={date.toISOString()}>
+        {formatDistance(date, referenceDate, {
+          includeSeconds: true,
+          addSuffix: true,
+        })}
+      </time>
+    )
   );
 };
 
@@ -207,7 +214,7 @@ const Unlocks = ({ nextUnlocks, dataDate, error }) => {
       <Row className="pt-2 pt-sm-3 justify-content-md-center">
         <UnlocksTable unlocks={nextUnlocks}>
           <p>
-            Updated <DataDate date={new Date(dataDate)} />
+            Updated <DataDate dateString={dataDate} />
           </p>
           <p>
             {loading ? (
