@@ -1,5 +1,5 @@
+import { URLSearchParams } from "url";
 import axios from "axios";
-import querystring from "querystring";
 
 import { BF4_GAME_ID_BITMASK } from "~/domain/common";
 
@@ -20,9 +20,9 @@ export default async (req, res) => {
 
   const { data } = await axios.post(
     "https://battlelog.battlefield.com/bf4/search/query/",
-    querystring.stringify({
+    new URLSearchParams({
       query: term,
-    }),
+    }).toString(),
     {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
