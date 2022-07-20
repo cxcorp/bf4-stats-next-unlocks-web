@@ -15,12 +15,12 @@ const platformIntToPlatform = (platformInt) => {
   }
 };
 
-export const BF4_GAME_ID = 2048;
+export const BF4_GAME_ID_BITMASK = 2048;
 
 const findFirstPlatformWithBF4 = (games) =>
   games
     .map((entry) => entry.map((val) => Number(val)))
-    .filter(([, games]) => (games & BF4_GAME_ID) === BF4_GAME_ID)[0];
+    .filter(([, games]) => (games & BF4_GAME_ID_BITMASK) === BF4_GAME_ID_BITMASK)[0];
 
 export const getPlatformIntFromSearchResult = (res) => {
   const [platformInt] = findFirstPlatformWithBF4(Object.entries(res.games));
