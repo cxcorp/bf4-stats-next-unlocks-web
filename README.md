@@ -2,7 +2,7 @@
 
 A web application that shows your next Battlefield 4 weapon attachment unlocks.
 
-**Try out the tool here:** https://bf4-next-unlocks-cxcorp.vercel.app
+**Try out the tool here:** https://bf4-next-unlocks.vercel.app
 
 ## Why?
 
