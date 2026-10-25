@@ -2,7 +2,10 @@
 
 A web application that shows your next Battlefield 4 weapon attachment unlocks.
 
-**Try out the tool here:** https://bf4-next-unlocks.vercel.app
+## Archival notice
+
+> [!CAUTION]
+> This project has been archived because the EA Battlelog API it ran on has been shut down or requires authentication now.
 
 ## Why?
 
